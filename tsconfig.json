@@ -1,43 +1,33 @@
 {
-  "compilerOptions": {
-    "baseUrl": "./",
-    "emitDecoratorMetadata": true,
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "module": "commonjs",
-    "outDir": "dist",
-    "removeComments": true,
-    "sourceMap": true,
-    "strict": true,
-    "target": "es6",
-    "moduleResolution": "node",
-    "paths": {
-      "@daos/*": [
-        "src/daos/*"
-      ],
-      "@entities/*": [
-        "src/entities/*"
-      ],
-      "@shared/*": [
-        "src/shared/*"
-      ],
-      "@server": [
-        "src/Server"
-      ]
+    "compilerOptions": {
+        "baseUrl": "./",
+        "emitDecoratorMetadata": true,
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "importHelpers": true,
+        "module": "commonjs",
+        "outDir": "dist",
+        "removeComments": true,
+        "sourceMap": true,
+        "strict": true,
+        "target": "es6",
+        "moduleResolution": "node",
+        "lib": ["dom", "dom.iterable", "esnext"],
+        "allowJs": false,
+        "skipLibCheck": true,
+        "allowSyntheticDefaultImports": true,
+        "forceConsistentCasingInFileNames": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "paths": {
+            "@daos/*": ["src/daos/*"],
+            "@entities/*": ["src/entities/*"],
+            "@shared/*": ["src/shared/*"],
+            "@server": ["src/Server"]
+        },
+        "types": ["node", "jest"],
+        "typeRoots": ["node_modules/@types"]
     },
-    "types": [
-      "node"
-    ],
-    "typeRoots": [
-      "node_modules/@types"
-    ]
-  },
-  "include": [
-    "src/**/*.ts",
-    "spec/**/*.ts"
-  ],
-  "exclude": [
-    "src/public/"
-  ]
+    "include": ["src/**/*.ts", "spec/**/*.ts"],
+    "exclude": ["src/public/"]
 }

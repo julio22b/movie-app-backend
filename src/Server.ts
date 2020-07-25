@@ -8,7 +8,12 @@ import { BAD_REQUEST } from 'http-status-codes';
 import 'express-async-errors';
 
 import BaseRouter from './routes';
-import logger from '@shared/Logger';
+import logger from './shared/Logger';
+
+// MONGOOSE
+if (process.env.NODE_ENV !== 'test') {
+    require('./mongoConfig');
+}
 
 // Init express
 const app = express();
@@ -35,6 +40,7 @@ if (process.env.NODE_ENV === 'production') {
 app.use('/api', BaseRouter);
 
 // Print API errors
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     logger.error(err.message, err);
     return res.status(BAD_REQUEST).json({

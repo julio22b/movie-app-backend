@@ -13,6 +13,7 @@ const options = commandLineArgs([
 
 // Set the env file
 const result2 = dotenv.config({
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     path: `./env/${options.env}.env`,
 });
 
