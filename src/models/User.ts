@@ -7,7 +7,6 @@ import { IReview } from './Review';
 export interface IUser extends Document {
     username: string;
     bio?: string;
-    email: string;
     password: string;
     reviews?: IReview[];
     watched?: IMovie[]; // how to do this one
@@ -21,7 +20,6 @@ export interface IUser extends Document {
 const UserSchema: Schema = new Schema({
     username: { type: String, required: true, unique: true },
     bio: { type: String },
-    email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
     watched: [{ type: Schema.Types.ObjectId, ref: 'Movie' }],

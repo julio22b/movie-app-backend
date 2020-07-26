@@ -1,11 +1,13 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { IMovie } from './Movie';
 import mongooseUniqueValidator from 'mongoose-unique-validator';
+import { IUser } from './User';
 
 export interface IMovieList extends Document {
     title: string;
     description: string;
-    movies: IMovie[];
+    movies: Array<IMovie['_id']>;
+    user: IUser['_id'];
 }
 
 const MovieListSchema: Schema = new Schema({
