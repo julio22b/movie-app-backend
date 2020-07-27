@@ -3,5 +3,14 @@ Content-Type: application/json
 
 {
     "username": "julio",
+    "password": "123456",
+}
+
+###
+POST http://localhost:3001/api/users/log-in HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "julio",
     "password": "123456"
 }

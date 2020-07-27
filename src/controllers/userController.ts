@@ -15,7 +15,7 @@ const user_log_in = async (req: Request, res: Response): Promise<void> => {
     if (user) {
         const success = await bcrypt.compare(password, user?.password);
         if (success) {
-            const token = jwt.sign(user.toJSON(), process.env.JWT_SECRET);
+            const token = jwt.sign(user.toJSON(), 'sadadasdasdasadasddsadas'); // HERE
             res.status(200).json({ username: user.username, token });
         }
     }

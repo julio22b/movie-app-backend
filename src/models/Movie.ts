@@ -8,7 +8,7 @@ export interface IMovie extends Document {
     synopsis: string;
     poster: string;
     ratings?: Rating[];
-    tags?: string[];
+    likes?: number;
 }
 
 const MovieSchema: Schema = new Schema(

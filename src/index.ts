@@ -10,13 +10,13 @@ import { BAD_REQUEST } from 'http-status-codes';
 import 'express-async-errors';
 
 // PASSPORT
-import * as passport from 'passport';
+import passport from 'passport';
 import { ExtractJwt, Strategy as jwtStrategy } from 'passport-jwt';
 
 import BaseRouter from './routes';
 import userRouter from './routes/users';
 import logger from './shared/Logger';
-import User from './models/User';
+import User, { IUser } from './models/User';
 
 // MONGOOSE
 if (process.env.NODE_ENV !== 'test') {
@@ -33,11 +33,11 @@ const app = express();
 passport.use(
     new jwtStrategy(
         {
-            secretOrKey: process.env.JWT_SECRET,
+            secretOrKey: 'sadadasdasdasadasddsadas',
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
         },
-        function (payload, done) {
-            User.findOne({ username: payload.username }, (err, user) => {
+        function (payload: IUser, done) {
+            void User.findOne({ username: payload.username }, (err, user) => {
                 if (err) return done(err);
                 if (!user) {
                     return done(null, false);
@@ -83,7 +83,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 const staticDir = path.join(__dirname, 'public');
 
 // Start the server
-const port = Number(process.env.PORT || 3000);
+const port = Number(process.env.PORT || 3001);
 app.listen(port, () => {
     logger.info(`Express server started on port: ${port}`);
 });
