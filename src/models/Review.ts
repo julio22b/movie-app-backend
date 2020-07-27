@@ -25,14 +25,22 @@ export interface IReview extends Document {
     rating?: Rating;
 }
 
-const ReviewSchema: Schema = new Schema({
-    movie: { type: Schema.Types.ObjectId, required: true, ref: 'Movie' },
-    content: { type: String, required: true },
-    user: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    date: { type: String, required: true },
-    likes: Number,
-    rating: Number,
-});
+const ReviewSchema: Schema = new Schema(
+    {
+        movie: { type: Schema.Types.ObjectId, required: true, ref: 'Movie' },
+        content: { type: String, required: true },
+        user: { type: Schema.Types.ObjectId, ref: 'User' },
+        date: { type: String, required: true },
+        likes: Number,
+        rating: Number,
+    },
+    {
+        timestamps: {
+            createdAt: 'created_at',
+            updatedAt: 'updated_at',
+        },
+    },
+);
 
 ReviewSchema.plugin(mongooseUniqueValidator);
 

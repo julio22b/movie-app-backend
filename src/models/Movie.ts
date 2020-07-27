@@ -12,23 +12,15 @@ export interface IMovie extends Document {
     genres?: string[];
 }
 
-const MovieSchema: Schema = new Schema(
-    {
-        title: { type: String, required: true, unique: true },
-        year: { type: String, required: true, maxlength: 4 },
-        synopsis: { type: String, required: true },
-        poster: { type: String, required: true, unique: true },
-        ratings: { type: [Number], enum: [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5] },
-        likes: Number,
-        genres: [String],
-    },
-    {
-        timestamps: {
-            createdAt: 'created_at',
-            updatedAt: 'updated_at',
-        },
-    },
-);
+const MovieSchema: Schema = new Schema({
+    title: { type: String, required: true, unique: true },
+    year: { type: String, required: true, maxlength: 4 },
+    synopsis: { type: String, required: true },
+    poster: { type: String, required: true, unique: true },
+    ratings: { type: [Number], enum: [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5] },
+    likes: Number,
+    genres: [String],
+});
 
 MovieSchema.plugin(uniqueValidator);
 
