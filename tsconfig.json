@@ -28,6 +28,6 @@
         "types": ["node", "jest"],
         "typeRoots": ["node_modules/@types"]
     },
-    "include": ["src/**/*.ts", "spec/**/*.ts"],
+    "include": ["src/**/*.ts", "spec/**/*.ts", "environment.d.ts"],
     "exclude": ["src/public/"]
 }
