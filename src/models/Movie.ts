@@ -9,6 +9,7 @@ export interface IMovie extends Document {
     poster: string;
     ratings?: Rating[];
     likes?: number;
+    genres?: string[];
 }
 
 const MovieSchema: Schema = new Schema(
@@ -18,7 +19,8 @@ const MovieSchema: Schema = new Schema(
         synopsis: { type: String, required: true },
         poster: { type: String, required: true, unique: true },
         ratings: { type: [Number], enum: [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5] },
-        tags: { type: [String] },
+        likes: Number,
+        genres: [String],
     },
     {
         timestamps: {
