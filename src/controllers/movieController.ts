@@ -1,12 +1,11 @@
 import { Request, Response } from 'express';
-import { validationResult } from 'express-validator';
 import Movie, { IMovie } from '../models/Movie';
 import { IReview } from 'src/models/Review';
+import isValidInput from './validationResult';
 
 const create_movie_instance = async (req: Request, res: Response): Promise<void> => {
-    const { title, year, synopsis, ratings, poster, likes } = req.body as IMovie;
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
+    const { title, year, synopsis, poster, likes } = req.body as IMovie;
+    if (!isValidInput(req)) {
         res.status(400).json({ message: 'Something is wrong...' });
         return;
     }
@@ -16,8 +15,7 @@ const create_movie_instance = async (req: Request, res: Response): Promise<void>
         year,
         synopsis,
         poster,
-        ratings,
-        likes,
+        likes: likes || 0,
     });
 
     await newMovie.save();
@@ -26,6 +24,10 @@ const create_movie_instance = async (req: Request, res: Response): Promise<void>
 
 const update_movie_instance_ratings = async (req: Request, res: Response): Promise<void> => {
     const { rating } = req.body as IReview;
+    if (!isValidInput(req)) {
+        res.status(400).json({ message: 'Something is wrong...' });
+        return;
+    }
     const updatedMovie = await Movie.findByIdAndUpdate(
         req.params.id,
         { $push: { ratings: rating } },
@@ -36,12 +38,22 @@ const update_movie_instance_ratings = async (req: Request, res: Response): Promi
 };
 
 const update_movie_instance_likes = async (req: Request, res: Response): Promise<void> => {
-    const updatedMovie = await Movie.findByIdAndUpdate(req.params.id, { $inc: { likes: 1 } });
+    const updatedMovie = await Movie.findByIdAndUpdate(
+        req.params.id,
+        { $inc: { likes: 1 } },
+        { new: true },
+    );
     res.status(200).json(updatedMovie);
+};
+
+const get_all_movie_instances = async (req: Request, res: Response): Promise<void> => {
+    const movies = await Movie.find({});
+    res.status(200).json(movies);
 };
 
 export default {
     create_movie_instance,
     update_movie_instance_ratings,
     update_movie_instance_likes,
+    get_all_movie_instances,
 };

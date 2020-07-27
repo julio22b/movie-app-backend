@@ -15,6 +15,7 @@ import { ExtractJwt, Strategy as jwtStrategy } from 'passport-jwt';
 
 import BaseRouter from './routes';
 import userRouter from './routes/users';
+import movieRouter from './routes/movies';
 import logger from './shared/Logger';
 import User, { IUser } from './models/User';
 
@@ -66,7 +67,7 @@ if (process.env.NODE_ENV === 'production') {
 // Add APIs
 app.use('/api', BaseRouter);
 app.use('/api/users', userRouter);
-
+app.use('/api/movies', movieRouter);
 // Print API errors
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
