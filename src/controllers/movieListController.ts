@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import MovieList, { IMovieList } from '../models/MovieList';
 import { validationResult } from 'express-validator';
 import Movie from '../models/Movie';
+import User from '../models/User';
 
 const get_movies_from_list = async (req: Request, res: Response): Promise<void> => {
     const list = await MovieList.findOne({ _id: req.params.movieListID }).populate('movies');
@@ -59,6 +60,7 @@ const create_list = async (req: Request, res: Response): Promise<void> => {
     });
 
     const savedList = await newMovieList.save();
+    await User.findOneAndUpdate({ _id: req.params.userID }, { $push: { lists: savedList } });
     res.status(200).json({ savedList, message: `The list '${savedList.title}' has been created` });
 };
 

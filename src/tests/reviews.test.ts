@@ -97,7 +97,7 @@ describe('reviews crud actions', () => {
 
     test('should update the likes of a review', async () => {
         const review = await Review.findOne({ content: 'DENIS VILLENUEVE' });
-        if (!review || !review.likes) {
+        if (!review || typeof review.likes !== 'number') {
             throw new Error('Review not found or doesnt have likes');
         }
         await api

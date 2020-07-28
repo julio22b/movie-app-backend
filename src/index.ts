@@ -13,10 +13,13 @@ import 'express-async-errors';
 import passport from 'passport';
 import { ExtractJwt, Strategy as jwtStrategy } from 'passport-jwt';
 
+// ROUTER IMPORTS
 import BaseRouter from './routes';
 import userRouter from './routes/users';
 import movieRouter from './routes/movies';
 import reviewRouter from './routes/reviews';
+import movieListRouter from './routes/movieLists';
+
 import logger from './shared/Logger';
 import User, { IUser } from './models/User';
 
@@ -70,6 +73,7 @@ app.use('/api', BaseRouter);
 app.use('/api/users', userRouter);
 app.use('/api/movies', movieRouter);
 app.use('/api/reviews', reviewRouter);
+app.use('/api/movie-lists', movieListRouter);
 // Print API errors
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
