@@ -5,6 +5,11 @@ import { validationResult } from 'express-validator';
 import Movie from '../models/Movie';
 import User from '../models/User';
 
+const delete_review = async (req: Request, res: Response): Promise<void> => {
+    await Review.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: `Your review has been deleted` });
+};
+
 const like_review = async (req: Request, res: Response): Promise<void> => {
     const likedReview = await Review.findByIdAndUpdate(
         req.params.id,
@@ -74,4 +79,5 @@ export default {
     post_review,
     edit_review,
     like_review,
+    delete_review,
 };

@@ -34,7 +34,7 @@ describe.only('add and update movie documents', () => {
     });
 
     test('should create a new movie instance', async () => {
-        const moviesAtStart = await api.get(`${baseUrl}/all`);
+        const moviesAtStart = await Movie.find({});
 
         const newMovie: IMovieBase = {
             title: 'Arrival',
@@ -49,10 +49,10 @@ describe.only('add and update movie documents', () => {
             .expect(200)
             .expect('Content-Type', jsonRegex);
 
-        const moviesAtEnd = await api.get(`${baseUrl}/all`);
-        expect(moviesAtEnd.body).toHaveLength(moviesAtStart.body.length + 1);
-        const movieTitles = moviesAtEnd.body.map((movie) => movie.title);
-        expect(movieTitles).toContain('Arrival');
+        const moviesAtEnd = await Movie.find({});
+        expect(moviesAtEnd).toHaveLength(moviesAtStart.length + 1);
+        const movieTitles = moviesAtEnd.map((movie) => movie.title);
+        expect(movieTitles).toContain(newMovie.title);
     });
 
     test('should update a movie instance likes', async () => {

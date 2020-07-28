@@ -1,7 +1,7 @@
 import supertest from 'supertest';
 import app from '..';
 import { connect, closeDatabase, clearDatabase } from '../mongoConfigTesting';
-import { IUser } from 'src/models/User';
+import User, { IUser } from 'src/models/User';
 const api = supertest(app);
 const jsonRegex = /application\/json/;
 const baseUrl = '/api/users';
@@ -40,7 +40,7 @@ describe('Validate user sign-up and log in', () => {
     });
 
     test("should return 200 with message 'Account created' if sign-up is valid", async () => {
-        const usersAtStart = await api.get(`${baseUrl}/all`);
+        const usersAtStart = await User.find({});
         const newUser: IUserBase = {
             username: 'julio',
             password: '123456',
@@ -55,8 +55,8 @@ describe('Validate user sign-up and log in', () => {
             .expect((res) => {
                 expect(res.body.message).toBe('Account created');
             });
-        const usersAtEnd = await api.get(`${baseUrl}/all`);
-        expect(usersAtEnd.body).toHaveLength(usersAtStart.body.length + 1);
+        const usersAtEnd = await User.find({});
+        expect(usersAtEnd).toHaveLength(usersAtStart.length + 1);
     });
 });
 

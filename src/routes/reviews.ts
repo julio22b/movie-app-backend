@@ -4,6 +4,8 @@ import reviewController from '../controllers/reviewController';
 
 const router = express.Router();
 
+router.delete('/:id', reviewController.delete_review);
+
 router.put('/:id/like', reviewController.like_review);
 
 router.put(
@@ -13,7 +15,7 @@ router.put(
 );
 
 router.post(
-    '/create',
+    '/:movieID/:userID/create',
     [check('content').trim().escape(), check('rating').isNumeric().trim().escape()],
     reviewController.post_review,
 );

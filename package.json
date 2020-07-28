@@ -6,7 +6,7 @@
         "lint": "eslint -c .eslintrc --ext .ts ./src",
         "start": "node -r module-alias/register ./dist --env=production",
         "dev": "NODE_ENV=development nodemon ./src",
-        "test": "NODE_ENV=test jest --runInBand ./src/tests"
+        "test": "NODE_ENV=test jest --runInBand ./src/tests/reviews.test.ts"
     },
     "nodemonConfig": {
         "watch": [

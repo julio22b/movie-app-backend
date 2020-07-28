@@ -20,7 +20,6 @@ export interface IReview extends Document {
     movie: IMovie;
     content: string;
     user: IUser;
-    date: string;
     likes?: number;
     rating?: Rating;
 }
@@ -30,7 +29,6 @@ const ReviewSchema: Schema = new Schema(
         movie: { type: Schema.Types.ObjectId, required: true, ref: 'Movie' },
         content: { type: String, required: true },
         user: { type: Schema.Types.ObjectId, ref: 'User' },
-        date: { type: String, required: true },
         likes: Number,
         rating: Number,
     },
