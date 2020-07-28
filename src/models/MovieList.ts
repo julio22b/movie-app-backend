@@ -6,8 +6,8 @@ import { IUser } from './User';
 export interface IMovieList extends Document {
     title: string;
     description: string;
-    movies: Array<IMovie['_id']>;
-    user: IUser['_id'];
+    movies: Array<IMovie>;
+    user: IUser;
 }
 
 const MovieListSchema: Schema = new Schema({

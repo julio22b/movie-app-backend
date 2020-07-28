@@ -1,7 +1,7 @@
 import supertest from 'supertest';
 import app from '..';
 import { connect, closeDatabase, clearDatabase } from '../mongoConfigTesting';
-import User, { IUser } from 'src/models/User';
+import User, { IUser } from '../models/User';
 const api = supertest(app);
 const jsonRegex = /application\/json/;
 const baseUrl = '/api/users';
