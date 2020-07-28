@@ -41,7 +41,7 @@ beforeAll(async () => {
 });
 
 describe('movie list operations', () => {
-    test('should create a new movie list', async () => {
+    test('should create a new movie list and add it to the lists[] of user', async () => {
         const user = await User.findOne({ username: 'julio' });
         const movieListsAtStart = await MovieList.find({});
         if (!user) {
@@ -64,6 +64,11 @@ describe('movie list operations', () => {
         expect(movieListsAtEnd).toHaveLength(movieListsAtStart.length + 1);
         const movieListDescs = movieListsAtEnd.map((m) => m.description);
         expect(movieListDescs).toContain(newMovieList.description);
+
+        const userAfterCreatingList = await User.findOne({ username: 'julio' });
+        const createdList = await MovieList.findOne({ title: newMovieList.title });
+        if (!userAfterCreatingList || !createdList) throw new Error('not found');
+        expect(userAfterCreatingList.lists).toContainEqual(createdList._id);
     });
 
     test('should add a movie to an existing list', async () => {
@@ -106,6 +111,26 @@ describe('movie list operations', () => {
         expect(movieListAfterRemoval?.movies).toHaveLength(movieList.movies.length - 1);
         const movieListMovies = movieListAfterRemoval?.movies.map((m) => m.title);
         expect(movieListMovies).not.toContain(movie._id);
+    });
+
+    test('should delete a movie list', async () => {
+        const movieListsAtStart = await MovieList.find({});
+        const movieListToDelete = await MovieList.findOne({ title: 'Amy Adam Movies' });
+
+        if (!movieListsAtStart || !movieListToDelete) throw new Error('not found');
+
+        await api
+            .delete(`${baseUrl}/${movieListToDelete._id}`)
+            .expect(200)
+            .expect('Content-Type', jsonRegex)
+            .expect((res) => expect(res.body.message).toBe('List has been deleted'));
+
+        const movieListsAtEnd = await MovieList.find({});
+        expect(movieListsAtEnd).toHaveLength(movieListsAtStart.length - 1);
+
+        const userAfterListRemoval = await User.findOne({ username: 'julio' }).populate('lists');
+        const movieListTitles = userAfterListRemoval?.lists?.map((l) => l.title);
+        expect(movieListTitles).not.toContain(movieListToDelete.title);
     });
 });
 

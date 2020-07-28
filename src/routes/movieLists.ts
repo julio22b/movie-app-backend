@@ -11,4 +11,6 @@ router.put('/:movieListID/add-movie/:movieID', movieListController.add_movie_to_
 
 router.put('/:movieListID/remove-movie/:movieID', movieListController.remove_movie_from_list);
 
+router.delete('/:movieListID', movieListController.delete_list);
+
 export default router;

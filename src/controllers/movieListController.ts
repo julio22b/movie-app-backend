@@ -13,6 +13,11 @@ const get_movies_from_list = async (req: Request, res: Response): Promise<void> 
     res.status(200).json(list);
 };
 
+const delete_list = async (req: Request, res: Response): Promise<void> => {
+    await MovieList.findOneAndDelete({ _id: req.params.movieListID });
+    res.status(200).json({ message: 'List has been deleted' });
+};
+
 const remove_movie_from_list = async (req: Request, res: Response): Promise<void> => {
     const movie = await Movie.findOne({ _id: req.params.movieID });
     const list = await MovieList.findOne({ _id: req.params.movieListID });
@@ -69,4 +74,5 @@ export default {
     add_movie_to_list,
     remove_movie_from_list,
     get_movies_from_list,
+    delete_list,
 };

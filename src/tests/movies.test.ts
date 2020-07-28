@@ -3,6 +3,8 @@ import supertest from 'supertest';
 import app from '..';
 import { connect, closeDatabase, clearDatabase } from '../mongoConfigTesting';
 import Movie, { IMovie } from '../models/Movie';
+import MovieList from 'src/models/MovieList';
+import User from 'src/models/User';
 const api = supertest(app);
 const jsonRegex = /application\/json/;
 const baseUrl = '/api/movies';
@@ -20,7 +22,7 @@ beforeAll(async () => {
     await connect();
 });
 
-describe.only('add and update movie documents', () => {
+describe('add and update movie documents', () => {
     beforeEach(async () => {
         await clearDatabase();
         const newMovie: IMovieBase = {
