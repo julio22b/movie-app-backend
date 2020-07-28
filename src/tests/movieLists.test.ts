@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import supertest from 'supertest';
 import app from '..';
 import { connect, closeDatabase, clearDatabase } from '../mongoConfigTesting';

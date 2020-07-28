@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import supertest from 'supertest';
 import app from '..';
 import { connect, closeDatabase, clearDatabase } from '../mongoConfigTesting';
@@ -64,7 +65,7 @@ describe.only('add and update movie documents', () => {
             .expect('Content-Type', jsonRegex);
 
         const afterLikingMovie = await Movie.findOne({ title: 'Phantom Thread' });
-        expect(afterLikingMovie?.likes).toBe(beforeLikingMovie?.likes + 1);
+        expect(afterLikingMovie?.likes).toBe(beforeLikingMovie.likes + 1);
     });
 
     test('should update movie instance ratings', async () => {

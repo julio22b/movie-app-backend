@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import supertest from 'supertest';
 import app from '..';
 import { connect, closeDatabase, clearDatabase } from '../mongoConfigTesting';
@@ -37,8 +38,11 @@ describe('reviews crud actions', () => {
         await Review.deleteMany({});
         const movie = await Movie.findOne({ title: 'Arrival' });
         const user = await User.findOne({ username: 'julio' });
+        if (!movie || !user) {
+            throw new Error('user or movie were not found');
+        }
 
-        await api.post(`${baseUrl}/${movie?._id}/${user?._id}/create`).send({
+        await api.post(`${baseUrl}/${movie._id}/${user._id}/create`).send({
             content: `DENIS VILLENUEVE`,
             rating: 5,
         });
