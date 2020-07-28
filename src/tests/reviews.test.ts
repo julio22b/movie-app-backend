@@ -48,7 +48,7 @@ describe('reviews crud actions', () => {
         });
     });
 
-    test('should create a review of a movie', async () => {
+    test('should create a review of a movie and add it to the reviews[] of the user', async () => {
         const user = await User.findOne({ username: 'julio' });
         const movie = await Movie.findOne({ title: 'Arrival' });
         const reviewsAtStart = await Review.find({});
@@ -57,7 +57,7 @@ describe('reviews crud actions', () => {
         }
 
         const newReview: IReviewBase = {
-            content: `isnt amy getting tired of carrying the entire film industry on her two perfect shoulders`,
+            content: `amy saves cinema`,
             rating: 5,
         };
 
@@ -75,13 +75,15 @@ describe('reviews crud actions', () => {
         expect(reviewsAtEnd).toHaveLength(reviewsAtStart.length + 1);
         const contents = reviewsAtEnd.map((review) => review.content);
         expect(contents).toContain(newReview.content);
+
+        const userAfterReview = await User.findOne({ username: 'julio' });
+        const review = await Review.findOne({ content: `amy saves cinema` });
+        expect(userAfterReview?.reviews).toContainEqual(review?._id);
     });
 
     test('should edit the content of a review', async () => {
         const review = await Review.findOne({ content: 'DENIS VILLENUEVE' });
-        if (!review) {
-            throw new Error('Review not found');
-        }
+        if (!review) throw new Error('Review not found');
 
         const update: IReviewBase = {
             content: 'IS A DIRECTOR',
@@ -97,6 +99,28 @@ describe('reviews crud actions', () => {
         const reviews = await Review.find({});
         const contents = reviews.map((r) => r.content);
         expect(contents).toContain(update.content);
+    });
+
+    test('should edit the rating of a movie review', async () => {
+        const review = await Review.findOne({ content: 'DENIS VILLENUEVE' });
+        if (!review) throw new Error('Review not found');
+
+        const update: IReviewBase = {
+            content: review.content,
+            rating: 1,
+        };
+
+        await api
+            .put(`${baseUrl}/${review._id}/edit`)
+            .send(update)
+            .expect(200)
+            .expect('Content-Type', jsonRegex);
+
+        const reviewAfterRatingEdit = await Review.findOne({ content: 'DENIS VILLENUEVE' });
+        expect(reviewAfterRatingEdit?.rating).toBe(update.rating);
+        const movie = await Movie.findOne({ title: 'Arrival' }).populate('reviews');
+        const ratings = movie?.reviews?.map((r) => r.rating);
+        expect(ratings).toContain(update.rating);
     });
 
     test('should update the likes of a review', async () => {

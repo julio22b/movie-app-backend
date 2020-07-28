@@ -11,12 +11,6 @@ router.post(
 
 router.put('/:id/like', movieController.update_movie_instance_likes);
 
-router.put(
-    '/:id/rate',
-    [check('rating', 'Rating must be a number').isNumeric().trim().escape()],
-    movieController.update_movie_instance_ratings,
-);
-
 router.get('/all', movieController.get_all_movie_instances);
 
 export default router;

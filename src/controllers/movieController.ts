@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import Movie, { IMovie } from '../models/Movie';
-import { IReview } from 'src/models/Review';
 import isValidInput from './validationResult';
 
 const create_movie_instance = async (req: Request, res: Response): Promise<void> => {
@@ -22,21 +21,6 @@ const create_movie_instance = async (req: Request, res: Response): Promise<void>
     res.status(200).json({ message: `You have reviewed ${title} (${year})` });
 };
 
-const update_movie_instance_ratings = async (req: Request, res: Response): Promise<void> => {
-    const { rating } = req.body as IReview;
-    if (!isValidInput(req)) {
-        res.status(400).json({ message: 'Something is wrong...' });
-        return;
-    }
-    const updatedMovie = await Movie.findByIdAndUpdate(
-        req.params.id,
-        { $push: { ratings: rating } },
-        { new: true },
-    );
-
-    res.status(200).json(updatedMovie);
-};
-
 const update_movie_instance_likes = async (req: Request, res: Response): Promise<void> => {
     const updatedMovie = await Movie.findByIdAndUpdate(
         req.params.id,
@@ -53,7 +37,6 @@ const get_all_movie_instances = async (req: Request, res: Response): Promise<voi
 
 export default {
     create_movie_instance,
-    update_movie_instance_ratings,
     update_movie_instance_likes,
     get_all_movie_instances,
 };

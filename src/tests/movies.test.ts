@@ -11,8 +11,8 @@ interface IMovieBase {
     title: IMovie['title'];
     year: IMovie['year'];
     synopsis: IMovie['synopsis'];
-    ratings: IMovie['ratings'];
     poster: IMovie['poster'];
+    reviews?: IMovie['reviews'];
     likes?: IMovie['likes'];
 }
 
@@ -27,7 +27,6 @@ describe.only('add and update movie documents', () => {
             title: 'Phantom Thread',
             year: '2017',
             synopsis: 'Crazy people',
-            ratings: [5, 5],
             poster: 'POSTER URL STRING HERE',
             likes: 10,
         };
@@ -41,7 +40,6 @@ describe.only('add and update movie documents', () => {
             title: 'Arrival',
             year: '2016',
             synopsis: 'Funny aliens talk to humans',
-            ratings: [5, 5, 5, 4.5],
             poster: 'url',
         };
         await api
@@ -66,19 +64,6 @@ describe.only('add and update movie documents', () => {
 
         const afterLikingMovie = await Movie.findOne({ title: 'Phantom Thread' });
         expect(afterLikingMovie?.likes).toBe(beforeLikingMovie.likes + 1);
-    });
-
-    test('should update movie instance ratings', async () => {
-        const beforeRatingMovie = await Movie.findOne({ title: 'Phantom Thread' });
-
-        await api
-            .put(`${baseUrl}/${beforeRatingMovie?._id}/rate`)
-            .send({ rating: 4 })
-            .expect(200)
-            .expect('Content-Type', jsonRegex);
-
-        const afterRatingMovie = await Movie.findOne({ title: 'Phantom Thread' });
-        expect(afterRatingMovie?.ratings).toContain(4);
     });
 });
 

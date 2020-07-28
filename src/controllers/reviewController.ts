@@ -47,22 +47,23 @@ const post_review = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    const reviewedMovie = await Movie.findOne({ _id: req.params.movieID });
-    const fromUser = await User.findOne({ _id: req.params.userID });
-    if (!reviewedMovie || !fromUser) {
-        res.status(400).json({ message: 'Something went wrong' });
-        return;
-    }
-
     const newReview: IReview = new Review({
-        movie: reviewedMovie._id,
-        user: fromUser._id,
+        movie: req.params.movieID,
+        user: req.params.userID,
         content,
         rating,
         likes: 0,
     });
 
+    const reviewedMovie = await Movie.findOne({ _id: req.params.movieID });
+    if (!reviewedMovie) {
+        res.status(400).json({ message: 'Something went wrong' });
+        return;
+    }
+
     const savedReview = await newReview.save();
+    await User.findOneAndUpdate({ _id: req.params.userID }, { $push: { reviews: savedReview } });
+    await Movie.findOneAndUpdate({ _id: req.params.movieID }, { $push: { reviews: savedReview } });
     res.status(200).json({
         savedReview,
         message: `You have posted a review for ${reviewedMovie.title} (${reviewedMovie.year})`,

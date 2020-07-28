@@ -1,13 +1,13 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
-import { Rating } from './Review';
+import { IReview } from './Review';
 
 export interface IMovie extends Document {
     title: string;
     year: string;
     synopsis: string;
     poster: string;
-    ratings?: Rating[];
+    reviews?: IReview[];
     likes?: number;
     genres?: string[];
 }
@@ -17,7 +17,7 @@ const MovieSchema: Schema = new Schema({
     year: { type: String, required: true, maxlength: 4 },
     synopsis: { type: String, required: true },
     poster: { type: String, required: true, unique: true },
-    ratings: { type: [Number], enum: [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5] },
+    reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
     likes: Number,
     genres: [String],
 });
