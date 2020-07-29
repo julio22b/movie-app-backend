@@ -9,10 +9,10 @@ export interface IUser extends Document {
     bio?: string;
     password: string;
     reviews?: IReview[];
-    watched?: IMovie[]; // how to do this one
-    followers?: IUser[];
-    following?: IUser[];
-    watch_list?: IMovie[];
+    watched_movies?: Array<IMovie['_id']>; // how to do this one
+    followers?: Array<IMovie['_id']>;
+    following?: Array<IMovie['_id']>;
+    watch_list?: Array<IMovie['_id']>;
     favorites?: IMovie[];
     lists?: IMovieList[];
 }
@@ -22,7 +22,7 @@ const UserSchema: Schema = new Schema({
     bio: { type: String },
     password: { type: String, required: true },
     reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
-    watched: [{ type: Schema.Types.ObjectId, ref: 'Movie' }],
+    watched_movies: [{ type: Schema.Types.ObjectId, ref: 'Movie' }],
     followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     following: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     watch_list: [{ type: Schema.Types.ObjectId, ref: 'Movie' }],

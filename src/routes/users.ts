@@ -4,6 +4,29 @@ import userController from '../controllers/userController';
 
 const router = express.Router();
 
+// **************************** ADD/REMOVE FROM WATCHED MOVIES/DIARY ****************//
+
+router.put('/:userID/add-to-diary/:movieID', userController.add_movie_to_diary);
+
+router.put('/:userID/remove-from-diary/:movieID', userController.remove_movie_from_diary);
+
+// ********************* WATCH LIST ADD/REMOVE MOVIE****************************** //
+
+router.put('/:userID/add-to-watchlist/:movieID', userController.add_movie_to_watch_list);
+
+router.put('/:userID/remove-from-watchlist/:movieID', userController.remove_movie_from_watch_list);
+
+// ***************** EDIT BIO ****************** ///
+router.put('/:id/edit-bio', [check('bio').trim().escape()], userController.edit_bio);
+
+// ************************ FOLLOWERS ******************************** ///
+
+router.put('/:followerID/follow/:followedUserID', userController.add_follower);
+
+router.put('/:followerID/unfollow/:followedUserID', userController.remove_follower);
+
+// ************************ *********** ******************************** ///
+
 router.post(
     '/sign-up',
     [
