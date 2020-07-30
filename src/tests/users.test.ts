@@ -62,9 +62,10 @@ describe('Validate user sign-up and log in', () => {
         const usersAtEnd = await User.find({});
         expect(usersAtEnd).toHaveLength(usersAtStart.length + 1);
     });
-
-    // MISSING LOG IN TESTS
 });
+
+const token =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXZpZXdzIjpbXSwid2F0Y2hlZF9tb3ZpZXMiOltdLCJmb2xsb3dlcnMiOltdLCJmb2xsb3dpbmciOltdLCJ3YXRjaF9saXN0IjpbXSwiZmF2b3JpdGVzIjpbXSwibGlzdHMiOltdLCJfaWQiOiI1ZjIzMDQzMWU3ZTFhODA4OTBiZWMwMjAiLCJ1c2VybmFtZSI6Imp1bGlvIiwicGFzc3dvcmQiOiIkMmEkMTAkUlN2Qk5yLjBEcFdFR2JRMnoySk8zLmFSUHV2MXVlZm9UalAzME5NaXBGRzBqb2V5M3phVWEiLCJfX3YiOjAsImlhdCI6MTU5NjEzODY2MH0.ELDT3jOlOPrB3A6ntHZYhAJkYch6XpmAViVzbBodM30';
 
 describe('Follow and unfollow users', () => {
     beforeEach(async () => {
@@ -74,9 +75,9 @@ describe('Follow and unfollow users', () => {
 
     test('should add user to follower(userB)/following(userA) lists when userA follows userB', async () => {
         const { julio, eric } = await userHelper.returnUsers();
-
         await api
             .put(`${baseUrl}/${julio._id}/follow/${eric._id}`)
+            .set('Authorization', `Bearer ${token}`)
             .expect(200)
             .expect('Content-Type', jsonRegex)
             .expect((res) =>
@@ -94,6 +95,7 @@ describe('Follow and unfollow users', () => {
 
         await api
             .put(`${baseUrl}/${julio._id}/unfollow/${eric._id}`)
+            .set('Authorization', `Bearer ${token}`)
             .expect(200)
             .expect('Content-Type', jsonRegex)
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -102,6 +104,12 @@ describe('Follow and unfollow users', () => {
         const { julio: julioAfterFollow, eric: ericAfterFollow } = await userHelper.returnUsers();
         expect(julioAfterFollow.following).not.toContainEqual(eric._id);
         expect(ericAfterFollow.followers).not.toContainEqual(julio._id);
+    });
+
+    test('should respond with 401 if no valid token is provided', async () => {
+        const { julio, eric } = await userHelper.returnUsers();
+
+        await api.put(`${baseUrl}/${julio._id}/follow/${eric._id}`).expect(401);
     });
 });
 
@@ -116,6 +124,7 @@ describe('Test adding and removing movies from watch list', () => {
         const { user, movie } = await userHelper.returnOneUserAndOneMovie();
         await api
             .put(`${baseUrl}/${user._id}/add-to-watchlist/${movie._id}`)
+            .set('Authorization', `Bearer ${token}`)
             .expect(200)
             .expect('Content-Type', jsonRegex);
 
@@ -128,6 +137,7 @@ describe('Test adding and removing movies from watch list', () => {
 
         await api
             .put(`${baseUrl}/${user._id}/remove-from-watchlist/${movie._id}`)
+            .set('Authorization', `Bearer ${token}`)
             .expect(200)
             .expect('Content-Type', jsonRegex);
 
@@ -136,7 +146,7 @@ describe('Test adding and removing movies from watch list', () => {
     });
 });
 
-describe.only('diary/watched movies removal and addition tests', () => {
+describe('diary/watched movies removal and addition tests', () => {
     beforeEach(async () => {
         await clearDatabase();
         await userHelper.createUsers();
@@ -148,6 +158,7 @@ describe.only('diary/watched movies removal and addition tests', () => {
 
         await api
             .put(`${baseUrl}/${user._id}/add-to-diary/${movie._id}`)
+            .set('Authorization', `Bearer ${token}`)
             .expect(200)
             .expect('Content-Type', jsonRegex);
 
@@ -160,6 +171,7 @@ describe.only('diary/watched movies removal and addition tests', () => {
 
         await api
             .put(`${baseUrl}/${user._id}/remove-from-diary/${movie._id}`)
+            .set('Authorization', `Bearer ${token}`)
             .expect(200)
             .expect('Content-Type', jsonRegex);
 

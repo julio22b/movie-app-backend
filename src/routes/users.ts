@@ -1,29 +1,59 @@
 import express from 'express';
 import { check } from 'express-validator';
 import userController from '../controllers/userController';
+import passport from 'passport';
 
 const router = express.Router();
 
 // **************************** ADD/REMOVE FROM WATCHED MOVIES/DIARY ****************//
 
-router.put('/:userID/add-to-diary/:movieID', userController.add_movie_to_diary);
+router.put(
+    '/:userID/add-to-diary/:movieID',
+    passport.authenticate('jwt', { session: false }),
+    userController.add_movie_to_diary,
+);
 
-router.put('/:userID/remove-from-diary/:movieID', userController.remove_movie_from_diary);
+router.put(
+    '/:userID/remove-from-diary/:movieID',
+    passport.authenticate('jwt', { session: false }),
+    userController.remove_movie_from_diary,
+);
 
 // ********************* WATCH LIST ADD/REMOVE MOVIE****************************** //
 
-router.put('/:userID/add-to-watchlist/:movieID', userController.add_movie_to_watch_list);
+router.put(
+    '/:userID/add-to-watchlist/:movieID',
+    passport.authenticate('jwt', { session: false }),
+    userController.add_movie_to_watch_list,
+);
 
-router.put('/:userID/remove-from-watchlist/:movieID', userController.remove_movie_from_watch_list);
+router.put(
+    '/:userID/remove-from-watchlist/:movieID',
+    passport.authenticate('jwt', { session: false }),
+    userController.remove_movie_from_watch_list,
+);
 
 // ***************** EDIT BIO ****************** ///
-router.put('/:id/edit-bio', [check('bio').trim().escape()], userController.edit_bio);
+router.put(
+    '/:id/edit-bio',
+    [check('bio').trim().escape()],
+    passport.authenticate('jwt', { session: false }),
+    userController.edit_bio,
+);
 
 // ************************ FOLLOWERS ******************************** ///
 
-router.put('/:followerID/follow/:followedUserID', userController.add_follower);
+router.put(
+    '/:followerID/follow/:followedUserID',
+    passport.authenticate('jwt', { session: false }),
+    userController.add_follower,
+);
 
-router.put('/:followerID/unfollow/:followedUserID', userController.remove_follower);
+router.put(
+    '/:followerID/unfollow/:followedUserID',
+    passport.authenticate('jwt', { session: false }),
+    userController.remove_follower,
+);
 
 // ************************ *********** ******************************** ///
 
