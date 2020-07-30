@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import supertest from 'supertest';
 import app from '..';
 import { connect, closeDatabase, clearDatabase } from '../mongoConfigTesting';
 import User, { IUser } from '../models/User';
+import userHelper from './user-helper';
+
 const api = supertest(app);
 const jsonRegex = /application\/json/;
 const baseUrl = '/api/users';
@@ -53,10 +56,115 @@ describe('Validate user sign-up and log in', () => {
             .expect(200)
             .expect('Content-Type', jsonRegex)
             .expect((res) => {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                 expect(res.body.message).toBe('Account created');
             });
         const usersAtEnd = await User.find({});
         expect(usersAtEnd).toHaveLength(usersAtStart.length + 1);
+    });
+
+    // MISSING LOG IN TESTS
+});
+
+describe('Follow and unfollow users', () => {
+    beforeEach(async () => {
+        await clearDatabase();
+        await userHelper.createUsers();
+    });
+
+    test('should add user to follower(userB)/following(userA) lists when userA follows userB', async () => {
+        const { julio, eric } = await userHelper.returnUsers();
+
+        await api
+            .put(`${baseUrl}/${julio._id}/follow/${eric._id}`)
+            .expect(200)
+            .expect('Content-Type', jsonRegex)
+            .expect((res) =>
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                expect(res.body.message).toBe(`You're now following ${eric.username}`),
+            );
+
+        const { julio: julioAfterFollow, eric: ericAfterFollow } = await userHelper.returnUsers();
+        expect(julioAfterFollow.following).toContainEqual(eric._id);
+        expect(ericAfterFollow.followers).toContainEqual(julio._id);
+    });
+
+    test('should remove user from followers(userB)/following(userA) lists when userA unfollows userB', async () => {
+        const { julio, eric } = await userHelper.returnUsers();
+
+        await api
+            .put(`${baseUrl}/${julio._id}/unfollow/${eric._id}`)
+            .expect(200)
+            .expect('Content-Type', jsonRegex)
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            .expect((res) => expect(res.body.message).toBe(`You have unfollowed ${eric.username}`));
+
+        const { julio: julioAfterFollow, eric: ericAfterFollow } = await userHelper.returnUsers();
+        expect(julioAfterFollow.following).not.toContainEqual(eric._id);
+        expect(ericAfterFollow.followers).not.toContainEqual(julio._id);
+    });
+});
+
+describe('Test adding and removing movies from watch list', () => {
+    beforeEach(async () => {
+        await clearDatabase();
+        await userHelper.createUsers();
+        await userHelper.createMovie();
+    });
+
+    test("should add a movie to an user's watch list", async () => {
+        const { user, movie } = await userHelper.returnOneUserAndOneMovie();
+        await api
+            .put(`${baseUrl}/${user._id}/add-to-watchlist/${movie._id}`)
+            .expect(200)
+            .expect('Content-Type', jsonRegex);
+
+        const { user: userAfterAddition } = await userHelper.returnOneUserAndOneMovie();
+        expect(userAfterAddition.watch_list).toContainEqual(movie._id);
+    });
+
+    test("should remove a movie from a user's watch list", async () => {
+        const { user, movie } = await userHelper.returnOneUserAndOneMovie();
+
+        await api
+            .put(`${baseUrl}/${user._id}/remove-from-watchlist/${movie._id}`)
+            .expect(200)
+            .expect('Content-Type', jsonRegex);
+
+        const { user: userAfterRemoval } = await userHelper.returnOneUserAndOneMovie();
+        expect(userAfterRemoval.watch_list).not.toContainEqual(movie._id);
+    });
+});
+
+describe.only('diary/watched movies removal and addition tests', () => {
+    beforeEach(async () => {
+        await clearDatabase();
+        await userHelper.createUsers();
+        await userHelper.createMovie();
+    });
+
+    test("should add a movie to a user' diary", async () => {
+        const { user, movie } = await userHelper.returnOneUserAndOneMovie();
+
+        await api
+            .put(`${baseUrl}/${user._id}/add-to-diary/${movie._id}`)
+            .expect(200)
+            .expect('Content-Type', jsonRegex);
+
+        const { user: userAfterAddition } = await userHelper.returnOneUserAndOneMovie();
+        expect(userAfterAddition.watched_movies).toContainEqual(movie._id);
+    });
+
+    test("should remove a movie from a user' diary", async () => {
+        const { user, movie } = await userHelper.returnOneUserAndOneMovie();
+
+        await api
+            .put(`${baseUrl}/${user._id}/remove-from-diary/${movie._id}`)
+            .expect(200)
+            .expect('Content-Type', jsonRegex);
+
+        const { user: userAfterAddition } = await userHelper.returnOneUserAndOneMovie();
+        expect(userAfterAddition.watched_movies).not.toContainEqual(movie._id);
     });
 });
 

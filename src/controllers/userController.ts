@@ -18,7 +18,7 @@ const add_movie_to_diary = async (req: Request, res: Response): Promise<void> =>
 const remove_movie_from_diary = async (req: Request, res: Response): Promise<void> => {
     await User.findOneAndUpdate(
         { _id: req.params.userID },
-        { $pull: { watched_movies: req.params.movieID } },
+        { $pull: { watched_movies: { _id: req.params.movieID } } },
     );
 
     res.status(200).json({ message: 'Added movie to diary' });
@@ -38,7 +38,7 @@ const add_movie_to_watch_list = async (req: Request, res: Response): Promise<voi
 const remove_movie_from_watch_list = async (req: Request, res: Response): Promise<void> => {
     await User.findOneAndUpdate(
         { _id: req.params.userID },
-        { $pull: { watch_list: req.params.movieID } },
+        { $pull: { watch_list: { _id: req.params.movieID } } },
     );
     res.status(200).json({ message: 'Removed from watch list' });
 };
@@ -89,12 +89,14 @@ const remove_follower = async (req: Request, res: Response): Promise<void> => {
 
     await User.findOneAndUpdate(
         { _id: follower._id },
-        { $pull: { following: req.params.followedUserID } },
+        { $pull: { following: { _id: req.params.followedUserID } } },
     );
     await User.findOneAndUpdate(
         { _id: followedUser._id },
-        { $pull: { followers: req.params.followerID } },
+        { $pull: { followers: { _id: req.params.followerID } } },
     );
+
+    res.status(200).json({ message: `You have unfollowed ${followedUser.username}` });
 };
 
 const get_all_users = async (req: Request, res: Response): Promise<void> => {
