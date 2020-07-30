@@ -1,8 +1,10 @@
 import express from 'express';
 import { check } from 'express-validator';
 import reviewController from '../controllers/reviewController';
+import passport from 'passport';
 
 const router = express.Router();
+router.use(passport.authenticate('jwt', { session: false }));
 
 router.delete('/:id', reviewController.delete_review);
 

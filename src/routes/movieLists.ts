@@ -1,7 +1,9 @@
 import movieListController from '../controllers/movieListController';
 import express from 'express';
+import passport from 'passport';
 
 const router = express.Router();
+router.use(passport.authenticate('jwt', { session: false }));
 
 router.get('/:movieListID/all', movieListController.get_movies_from_list);
 
