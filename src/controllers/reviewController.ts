@@ -5,6 +5,15 @@ import { validationResult } from 'express-validator';
 import Movie from '../models/Movie';
 import User from '../models/User';
 
+const get_latest_reviews = async (req: Request, res: Response): Promise<void> => {
+    const latestReviews = await Review.find({})
+        .sort({ _id: -1 })
+        .limit(Number(req.query.amount))
+        .populate('user', 'username')
+        .populate('movie');
+    res.status(200).json(latestReviews);
+};
+
 const delete_review = async (req: Request, res: Response): Promise<void> => {
     await Review.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: `Your review has been deleted` });
@@ -81,4 +90,5 @@ export default {
     edit_review,
     like_review,
     delete_review,
+    get_latest_reviews,
 };

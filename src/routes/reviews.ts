@@ -6,6 +6,8 @@ import passport from 'passport';
 const router = express.Router();
 router.use(passport.authenticate('jwt', { session: false }));
 
+router.get('/latest', reviewController.get_latest_reviews);
+
 router.delete('/:id', reviewController.delete_review);
 
 router.put('/:id/like', reviewController.like_review);
