@@ -49,7 +49,7 @@ const edit_review = async (req: Request, res: Response): Promise<void> => {
 };
 
 const post_review = async (req: Request, res: Response): Promise<void> => {
-    const { content, rating } = req.body as IReview;
+    const { content, rating, liked_movie } = req.body as IReview;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         res.status(400).json({ errors: errors.array() });
@@ -60,6 +60,7 @@ const post_review = async (req: Request, res: Response): Promise<void> => {
         movie: req.params.movieID,
         user: req.params.userID,
         content,
+        liked_movie,
         rating: Number(rating),
         likes: 0,
     });
@@ -72,7 +73,10 @@ const post_review = async (req: Request, res: Response): Promise<void> => {
 
     const savedReview = await newReview.save();
     await User.findOneAndUpdate({ _id: req.params.userID }, { $push: { reviews: savedReview } });
-    await Movie.findOneAndUpdate({ _id: req.params.movieID }, { $push: { reviews: savedReview } });
+    await Movie.findOneAndUpdate(
+        { _id: req.params.movieID },
+        { $push: { reviews: savedReview }, $inc: { likes: liked_movie ? 1 : 0 } },
+    );
     res.status(200).json({
         savedReview,
         message: `You have posted a review for ${reviewedMovie.title} (${reviewedMovie.year})`,
