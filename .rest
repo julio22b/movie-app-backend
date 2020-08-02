@@ -4,6 +4,7 @@ Content-Type: application/json
 {
     "username": "julio",
     "password": "123456",
+    "password_confirmation": "123456"
 }
 
 ###
@@ -14,3 +15,34 @@ Content-Type: application/json
     "username": "julio",
     "password": "123456"
 }
+
+###
+POST http://localhost:3001/api/movies/create HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXZpZXdzIjpbXSwid2F0Y2hlZF9tb3ZpZXMiOltdLCJmb2xsb3dlcnMiOltdLCJmb2xsb3dpbmciOltdLCJ3YXRjaF9saXN0IjpbXSwiZmF2b3JpdGVzIjpbXSwibGlzdHMiOltdLCJfaWQiOiI1ZjIzMDQzMWU3ZTFhODA4OTBiZWMwMjAiLCJ1c2VybmFtZSI6Imp1bGlvIiwicGFzc3dvcmQiOiIkMmEkMTAkUlN2Qk5yLjBEcFdFR2JRMnoySk8zLmFSUHV2MXVlZm9UalAzME5NaXBGRzBqb2V5M3phVWEiLCJfX3YiOjAsImlhdCI6MTU5NjI5NjY0NH0.8CK3Jmi6ZLySykw0w6AeQc9nJgLJDzmiR_u9iY9pm-I
+
+{
+    "title": "Phantom Thread",
+    "year": "2017",
+    "synopsis": "YES",
+    "poster": "urlurlyrl"
+}
+
+// 5f230431e7e1a80890bec020 IS USER 'JULIO' ID
+// TO CREATE A REVIEW DO MOVIEID/USERID/CREATE
+// ID FOR ARRIVAL IS 5f2595df30a1180fb5565cc8
+// ID FOR CAROL IS 5f2598f830a1180fb5565cca
+// ID FOR PHANTOM THREAD IS 5f25990730a1180fb5565ccb
+###
+POST http://localhost:3001/api/reviews/5f25990730a1180fb5565ccb/5f230431e7e1a80890bec020/create HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXZpZXdzIjpbXSwid2F0Y2hlZF9tb3ZpZXMiOltdLCJmb2xsb3dlcnMiOltdLCJmb2xsb3dpbmciOltdLCJ3YXRjaF9saXN0IjpbXSwiZmF2b3JpdGVzIjpbXSwibGlzdHMiOltdLCJfaWQiOiI1ZjIzMDQzMWU3ZTFhODA4OTBiZWMwMjAiLCJ1c2VybmFtZSI6Imp1bGlvIiwicGFzc3dvcmQiOiIkMmEkMTAkUlN2Qk5yLjBEcFdFR2JRMnoySk8zLmFSUHV2MXVlZm9UalAzME5NaXBGRzBqb2V5M3phVWEiLCJfX3YiOjAsImlhdCI6MTU5NjI5NjY0NH0.8CK3Jmi6ZLySykw0w6AeQc9nJgLJDzmiR_u9iY9pm-I
+
+{
+    "content": "A GENIUS",
+    "rating":"5"
+}
+
+###
+GET http://localhost:3001/api/reviews/latest?amount=10 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXZpZXdzIjpbXSwid2F0Y2hlZF9tb3ZpZXMiOltdLCJmb2xsb3dlcnMiOltdLCJmb2xsb3dpbmciOltdLCJ3YXRjaF9saXN0IjpbXSwiZmF2b3JpdGVzIjpbXSwibGlzdHMiOltdLCJfaWQiOiI1ZjIzMDQzMWU3ZTFhODA4OTBiZWMwMjAiLCJ1c2VybmFtZSI6Imp1bGlvIiwicGFzc3dvcmQiOiIkMmEkMTAkUlN2Qk5yLjBEcFdFR2JRMnoySk8zLmFSUHV2MXVlZm9UalAzME5NaXBGRzBqb2V5M3phVWEiLCJfX3YiOjAsImlhdCI6MTU5NjI5NjY0NH0.8CK3Jmi6ZLySykw0w6AeQc9nJgLJDzmiR_u9iY9pm-I

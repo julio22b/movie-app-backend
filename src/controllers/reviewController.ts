@@ -60,7 +60,7 @@ const post_review = async (req: Request, res: Response): Promise<void> => {
         movie: req.params.movieID,
         user: req.params.userID,
         content,
-        rating,
+        rating: Number(rating),
         likes: 0,
     });
 

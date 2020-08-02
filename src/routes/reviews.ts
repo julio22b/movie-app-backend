@@ -4,7 +4,7 @@ import reviewController from '../controllers/reviewController';
 import passport from 'passport';
 
 const router = express.Router();
-router.use(passport.authenticate('jwt', { session: false }));
+/* router.use(passport.authenticate('jwt', { session: false })); */
 
 router.get('/latest', reviewController.get_latest_reviews);
 

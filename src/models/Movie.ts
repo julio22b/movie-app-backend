@@ -7,9 +7,14 @@ export interface IMovie extends Document {
     year: string;
     synopsis: string;
     poster: string;
+    director?: string;
     reviews?: IReview[];
     likes?: number;
     genres?: string[];
+    actors?: string[];
+    country: string;
+    language: string;
+    run_time: string;
 }
 
 const MovieSchema: Schema = new Schema({
@@ -17,9 +22,14 @@ const MovieSchema: Schema = new Schema({
     year: { type: String, required: true, maxlength: 4 },
     synopsis: { type: String, required: true },
     poster: { type: String, required: true, unique: true },
+    director: String,
     reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
     likes: Number,
     genres: [String],
+    actors: [String],
+    country: String,
+    language: String,
+    run_time: String,
 });
 
 MovieSchema.plugin(uniqueValidator);
