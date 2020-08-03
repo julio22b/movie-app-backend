@@ -5,6 +5,19 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import isValidInput from './validationResult';
 
+const get_one_user = async (req: Request, res: Response): Promise<void> => {
+    const user = await User.findOne({ _id: req.params.id })
+        .populate('watched_movies followers following watchlist', '-password')
+        .populate({
+            path: 'reviews',
+            populate: { path: 'movie', model: 'Movie', select: '-reviews' },
+        });
+    if (!user) {
+        res.status(400).json({ message: 'User not found' });
+    }
+    res.status(200).json(user);
+};
+
 // ******************************* ADD/REMOVE FROM WATCH LIST ******************** //
 const add_movie_to_diary = async (req: Request, res: Response): Promise<void> => {
     await User.findOneAndUpdate(
@@ -155,4 +168,5 @@ export default {
     add_movie_to_watch_list,
     remove_movie_from_diary,
     add_movie_to_diary,
+    get_one_user,
 };

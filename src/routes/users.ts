@@ -5,6 +5,8 @@ import passport from 'passport';
 
 const router = express.Router();
 
+router.get('/:id', userController.get_one_user);
+
 // **************************** ADD/REMOVE FROM WATCHED MOVIES/DIARY ****************//
 
 router.put(
