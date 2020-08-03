@@ -72,7 +72,10 @@ const post_review = async (req: Request, res: Response): Promise<void> => {
     }
 
     const savedReview = await newReview.save();
-    await User.findOneAndUpdate({ _id: req.params.userID }, { $push: { reviews: savedReview } });
+    await User.findOneAndUpdate(
+        { _id: req.params.userID },
+        { $push: { reviews: savedReview, watched_movies: reviewedMovie } },
+    );
     await Movie.findOneAndUpdate(
         { _id: req.params.movieID },
         { $push: { reviews: savedReview }, $inc: { likes: liked_movie ? 1 : 0 } },

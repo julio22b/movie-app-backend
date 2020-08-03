@@ -62,8 +62,8 @@ router.put(
 router.post(
     '/sign-up',
     [
-        check('username', 'Your username should be within 3 and 15 characters long')
-            .isLength({ min: 3, max: 15 })
+        check('username', 'Your username should be within 3 and 25 characters long')
+            .isLength({ min: 3, max: 25 })
             .trim()
             .escape(),
         check('password', 'Password must be at least 6 characters long')

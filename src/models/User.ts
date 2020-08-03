@@ -18,9 +18,9 @@ export interface IUser extends Document {
 }
 
 const UserSchema: Schema = new Schema({
-    username: { type: String, required: true, unique: true },
+    username: { type: String, required: true, unique: true, maxlength: 25 },
     bio: { type: String },
-    password: { type: String, required: true },
+    password: { type: String, required: true, select: false },
     reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
     watched_movies: [{ type: Schema.Types.ObjectId, ref: 'Movie' }],
     followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],

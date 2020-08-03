@@ -3,24 +3,11 @@ import Movie, { IMovie } from '../models/Movie';
 import isValidInput from './validationResult';
 
 const create_movie_instance = async (req: Request, res: Response): Promise<void> => {
-    const {
-        title,
-        year,
-        synopsis,
-        poster,
-        director,
-        likes,
-        actors,
-        country,
-        genres,
-        language,
-        run_time,
-    } = req.body as IMovie;
+    const { title, likes } = req.body as IMovie;
     if (!isValidInput(req)) {
         res.status(400).json({ message: 'Something is wrong...' });
         return;
     }
-
     const movieExists = await Movie.findOne({ title });
     if (movieExists) {
         res.status(200).json(movieExists);
@@ -28,17 +15,8 @@ const create_movie_instance = async (req: Request, res: Response): Promise<void>
     }
 
     const newMovie: IMovie = new Movie({
-        title,
-        year,
-        synopsis,
-        poster,
+        ...req.body,
         likes: likes || 0,
-        director,
-        actors,
-        country,
-        genres,
-        run_time,
-        language,
     });
 
     const savedMovie = await newMovie.save();
