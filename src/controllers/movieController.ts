@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Movie, { IMovie } from '../models/Movie';
+import User from '../models/User';
 import isValidInput from './validationResult';
 
 const create_movie_instance = async (req: Request, res: Response): Promise<void> => {
@@ -24,11 +25,25 @@ const create_movie_instance = async (req: Request, res: Response): Promise<void>
 };
 
 const update_movie_instance_likes = async (req: Request, res: Response): Promise<void> => {
+    const { userID, movieID } = req.params;
+    const user = await User.findOne({ _id: userID });
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    if (user && user.liked_movies?.includes(movieID)) {
+        const updatedMovie = await Movie.findByIdAndUpdate(
+            movieID,
+            { $inc: { likes: -1 } },
+            { new: true },
+        );
+        await User.findOneAndUpdate({ _id: userID }, { $pull: { liked_movies: movieID } });
+        res.status(200).json(updatedMovie);
+        return;
+    }
     const updatedMovie = await Movie.findByIdAndUpdate(
-        req.params.id,
+        movieID,
         { $inc: { likes: 1 } },
         { new: true },
     );
+    await User.findOneAndUpdate({ _id: userID }, { $addToSet: { liked_movies: movieID } });
     res.status(200).json(updatedMovie);
 };
 

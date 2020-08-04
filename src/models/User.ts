@@ -16,6 +16,7 @@ export interface IUser extends Document {
     watch_list?: Array<IMovie['_id']>;
     favorites?: IMovie[];
     lists?: IMovieList[];
+    liked_movies?: Array<IMovie['_id']>;
 }
 
 const UserSchema: Schema = new Schema({
@@ -30,6 +31,7 @@ const UserSchema: Schema = new Schema({
     watch_list: [{ type: Schema.Types.ObjectId, ref: 'Movie' }],
     favorites: [{ type: Schema.Types.ObjectId, ref: 'Movie' }],
     lists: [{ type: Schema.Types.ObjectId, ref: 'MovieList' }],
+    liked_movies: [{ type: Schema.Types.ObjectId, ref: 'Movie' }],
 });
 
 UserSchema.plugin(uniqueValidator);
