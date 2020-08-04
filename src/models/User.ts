@@ -6,10 +6,11 @@ import { IReview } from './Review';
 
 export interface IUser extends Document {
     username: string;
+    profile_picture: string;
     bio?: string;
     password: string;
     reviews?: IReview[];
-    watched_movies?: Array<IMovie['_id']>; // how to do this one
+    watched_movies?: Array<IMovie['_id']>;
     followers?: Array<IMovie['_id']>;
     following?: Array<IMovie['_id']>;
     watch_list?: Array<IMovie['_id']>;
@@ -19,6 +20,7 @@ export interface IUser extends Document {
 
 const UserSchema: Schema = new Schema({
     username: { type: String, required: true, unique: true, maxlength: 25 },
+    profile_picture: String,
     bio: { type: String },
     password: { type: String, required: true, select: false },
     reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],

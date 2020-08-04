@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 import { IMovie } from './Movie';
 import { IUser } from './User';
 import mongooseUniqueValidator from 'mongoose-unique-validator';
+import { IComment } from './Comment';
 
 export enum Rating {
     HALF_STAR = 0.5,
@@ -24,6 +25,7 @@ export interface IReview extends Document {
     watched_on?: string;
     likes?: number;
     rating?: Rating;
+    comments: IComment['_id'];
 }
 
 const ReviewSchema: Schema = new Schema(
@@ -35,6 +37,7 @@ const ReviewSchema: Schema = new Schema(
         watched_on: String,
         likes: Number,
         rating: Number,
+        comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
     },
     {
         timestamps: {
