@@ -24,27 +24,33 @@ const create_movie_instance = async (req: Request, res: Response): Promise<void>
     res.status(200).json(savedMovie);
 };
 
-const update_movie_instance_likes = async (req: Request, res: Response): Promise<void> => {
-    const { userID, movieID } = req.params;
-    const user = await User.findOne({ _id: userID });
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    if (user && user.liked_movies?.includes(movieID)) {
-        const updatedMovie = await Movie.findByIdAndUpdate(
-            movieID,
-            { $inc: { likes: -1 } },
-            { new: true },
-        );
-        await User.findOneAndUpdate({ _id: userID }, { $pull: { liked_movies: movieID } });
-        res.status(200).json(updatedMovie);
+const unlike_movie = async (req: Request, res: Response): Promise<void> => {
+    const movie = await Movie.findOneAndUpdate(
+        { _id: req.params.movieID },
+        { $inc: { likes: -1 } },
+        { new: true },
+    );
+    if (!movie) {
+        res.status(400).json({ message: 'Something went wrong' });
         return;
     }
-    const updatedMovie = await Movie.findByIdAndUpdate(
-        movieID,
+    await User.findOneAndUpdate({ _id: req.params.userID }, { $pull: { liked_movies: movie._id } });
+    res.status(200).json({ message: `You have unliked ${movie.title} (${movie.year})` });
+    return;
+};
+
+const like_movie = async (req: Request, res: Response): Promise<void> => {
+    const movie = await Movie.findOneAndUpdate(
+        { _id: req.params.movieID },
         { $inc: { likes: 1 } },
         { new: true },
     );
-    await User.findOneAndUpdate({ _id: userID }, { $addToSet: { liked_movies: movieID } });
-    res.status(200).json(updatedMovie);
+    if (!movie) {
+        res.status(400).json({ message: 'Something went wrong' });
+        return;
+    }
+    await User.findOneAndUpdate({ _id: req.params.userID }, { $addToSet: { liked_movies: movie } });
+    res.status(200).json({ message: `You have liked ${movie.title} (${movie.year})` });
 };
 
 const get_all_movie_instances = async (req: Request, res: Response): Promise<void> => {
@@ -54,6 +60,7 @@ const get_all_movie_instances = async (req: Request, res: Response): Promise<voi
 
 export default {
     create_movie_instance,
-    update_movie_instance_likes,
+    like_movie,
+    unlike_movie,
     get_all_movie_instances,
 };

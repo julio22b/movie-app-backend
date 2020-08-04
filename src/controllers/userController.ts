@@ -4,10 +4,11 @@ import User, { IUser } from '../models/User';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import isValidInput from './validationResult';
+import Movie from 'src/models/Movie';
 
 const get_one_user = async (req: Request, res: Response): Promise<void> => {
     const user = await User.findOne({ _id: req.params.id })
-        .populate('watched_movies followers following watchlist', '-password')
+        .populate('watched_movies followers following watch_list liked_movies', '-password')
         .populate({
             path: 'reviews',
             populate: { path: 'movie', model: 'Movie', select: '-reviews' },
@@ -18,7 +19,7 @@ const get_one_user = async (req: Request, res: Response): Promise<void> => {
     res.status(200).json(user);
 };
 
-// ******************************* ADD/REMOVE FROM WATCH LIST ******************** //
+// ******************************* ADD/REMOVE FROM DIARY ******************** //
 const add_movie_to_diary = async (req: Request, res: Response): Promise<void> => {
     await User.findOneAndUpdate(
         { _id: req.params.userID },
@@ -29,31 +30,48 @@ const add_movie_to_diary = async (req: Request, res: Response): Promise<void> =>
 };
 
 const remove_movie_from_diary = async (req: Request, res: Response): Promise<void> => {
+    const movie = await Movie.findOne({ _id: req.params.movieID });
+    if (!movie) {
+        res.status(400).json({ message: 'Something went wrong' });
+        return;
+    }
     await User.findOneAndUpdate(
         { _id: req.params.userID },
-        { $pull: { watched_movies: { _id: req.params.movieID } } },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        { $pull: { watched_movies: movie._id } },
     );
 
-    res.status(200).json({ message: 'Added movie to diary' });
+    res.status(200).json({ message: `Added ${movie.title} (${movie.year}) to diary` });
 };
 
 // ****************************** ADD/REMOVE FROM WATCH LIST **************************///
 
 const add_movie_to_watch_list = async (req: Request, res: Response): Promise<void> => {
+    const movie = await Movie.findOne({ _id: req.params.movieID });
+    if (!movie) {
+        res.status(400).json({ message: 'Something went wrong' });
+        return;
+    }
     await User.findOneAndUpdate(
         { _id: req.params.userID },
         { $addToSet: { watch_list: req.params.movieID } },
     );
 
-    res.status(200).json({ message: 'Added movie to watch list' });
+    res.status(200).json({ message: `Added ${movie.title} (${movie.year}) to watch list` });
 };
 
 const remove_movie_from_watch_list = async (req: Request, res: Response): Promise<void> => {
+    const movie = await Movie.findOne({ _id: req.params.movieID });
+    if (!movie) {
+        res.status(400).json({ message: 'Something went wrong' });
+        return;
+    }
     await User.findOneAndUpdate(
         { _id: req.params.userID },
-        { $pull: { watch_list: { _id: req.params.movieID } } },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        { $pull: { watch_list: movie._id } },
     );
-    res.status(200).json({ message: 'Removed from watch list' });
+    res.status(200).json({ message: `Removed ${movie.title} (${movie.year}) from watch list` });
 };
 
 // *************************** EDIT BIO ************************** ****///////
