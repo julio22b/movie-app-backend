@@ -22,7 +22,7 @@ const get_one_user = async (req: Request, res: Response): Promise<void> => {
 const add_movie_to_diary = async (req: Request, res: Response): Promise<void> => {
     await User.findOneAndUpdate(
         { _id: req.params.userID },
-        { $push: { watched_movies: req.params.movieID } },
+        { $addToSet: { watched_movies: req.params.movieID } },
     );
 
     res.status(200).json({ message: 'Added movie to diary' });
@@ -42,7 +42,7 @@ const remove_movie_from_diary = async (req: Request, res: Response): Promise<voi
 const add_movie_to_watch_list = async (req: Request, res: Response): Promise<void> => {
     await User.findOneAndUpdate(
         { _id: req.params.userID },
-        { $push: { watch_list: req.params.movieID } },
+        { $addToSet: { watch_list: req.params.movieID } },
     );
 
     res.status(200).json({ message: 'Added movie to watch list' });
@@ -82,11 +82,11 @@ const add_follower = async (req: Request, res: Response): Promise<void> => {
 
     await User.findOneAndUpdate(
         { _id: follower._id },
-        { $push: { following: req.params.followedUserID } },
+        { $addToSet: { following: req.params.followedUserID } },
     );
     await User.findOneAndUpdate(
         { _id: followedUser._id },
-        { $push: { followers: req.params.followerID } },
+        { $addToSet: { followers: req.params.followerID } },
     );
 
     res.status(200).json({ message: `You're now following ${followedUser.username}` });
