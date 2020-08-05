@@ -21,12 +21,15 @@ const get_one_user = async (req: Request, res: Response): Promise<void> => {
 
 // ******************************* ADD/REMOVE FROM DIARY ******************** //
 const add_movie_to_diary = async (req: Request, res: Response): Promise<void> => {
+    const movie = await Movie.findOne({ _id: req.params.movieID });
     await User.findOneAndUpdate(
         { _id: req.params.userID },
         { $addToSet: { watched_movies: req.params.movieID } },
     );
-
-    res.status(200).json({ message: 'Added movie to diary' });
+    if (movie) {
+        res.status(200).json({ message: `Added ${movie.title} (${movie.year}) to your diary` });
+        return;
+    }
 };
 
 const remove_movie_from_diary = async (req: Request, res: Response): Promise<void> => {
@@ -41,7 +44,7 @@ const remove_movie_from_diary = async (req: Request, res: Response): Promise<voi
         { $pull: { watched_movies: movie._id } },
     );
 
-    res.status(200).json({ message: `Added ${movie.title} (${movie.year}) to diary` });
+    res.status(200).json({ message: `Removed ${movie.title} (${movie.year}) from your diary` });
 };
 
 // ****************************** ADD/REMOVE FROM WATCH LIST **************************///
@@ -57,7 +60,7 @@ const add_movie_to_watch_list = async (req: Request, res: Response): Promise<voi
         { $addToSet: { watch_list: req.params.movieID } },
     );
 
-    res.status(200).json({ message: `Added ${movie.title} (${movie.year}) to watch list` });
+    res.status(200).json({ message: `Added ${movie.title} (${movie.year}) to your watchlist` });
 };
 
 const remove_movie_from_watch_list = async (req: Request, res: Response): Promise<void> => {
@@ -71,7 +74,7 @@ const remove_movie_from_watch_list = async (req: Request, res: Response): Promis
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         { $pull: { watch_list: movie._id } },
     );
-    res.status(200).json({ message: `Removed ${movie.title} (${movie.year}) from watch list` });
+    res.status(200).json({ message: `Removed ${movie.title} (${movie.year}) from you watchlist` });
 };
 
 // *************************** EDIT BIO ************************** ****///////

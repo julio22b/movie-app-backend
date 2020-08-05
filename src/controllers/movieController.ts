@@ -9,7 +9,10 @@ const create_movie_instance = async (req: Request, res: Response): Promise<void>
         res.status(400).json({ message: 'Something is wrong...' });
         return;
     }
-    const movieExists = await Movie.findOne({ title });
+    const movieExists = await Movie.findOne({ title }).populate({
+        path: 'reviews',
+        populate: { path: 'user', model: 'User', select: 'profile_picture username' },
+    });
     if (movieExists) {
         res.status(200).json(movieExists);
         return;
