@@ -10,6 +10,7 @@ export interface IMovie extends Document {
     director?: string;
     reviews?: IReview[];
     likes?: number;
+    watches: number;
     genres?: string[];
     actors?: string[];
     country: string;
@@ -25,6 +26,7 @@ const MovieSchema: Schema = new Schema({
     director: String,
     reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
     likes: Number,
+    watches: Number,
     genres: [String],
     actors: [String],
     country: String,

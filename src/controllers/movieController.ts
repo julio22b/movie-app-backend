@@ -38,7 +38,9 @@ const unlike_movie = async (req: Request, res: Response): Promise<void> => {
         return;
     }
     await User.findOneAndUpdate({ _id: req.params.userID }, { $pull: { liked_movies: movie._id } });
-    res.status(200).json({ message: `You have unliked ${movie.title} (${movie.year})` });
+    res.status(200).json({
+        message: `You've removed ${movie.title} (${movie.year}) from your liked films`,
+    });
     return;
 };
 
@@ -53,7 +55,7 @@ const like_movie = async (req: Request, res: Response): Promise<void> => {
         return;
     }
     await User.findOneAndUpdate({ _id: req.params.userID }, { $addToSet: { liked_movies: movie } });
-    res.status(200).json({ message: `You have liked ${movie.title} (${movie.year})` });
+    res.status(200).json({ message: `You've liked ${movie.title} (${movie.year})` });
 };
 
 const get_all_movie_instances = async (req: Request, res: Response): Promise<void> => {

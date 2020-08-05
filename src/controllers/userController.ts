@@ -21,7 +21,11 @@ const get_one_user = async (req: Request, res: Response): Promise<void> => {
 
 // ******************************* ADD/REMOVE FROM DIARY ******************** //
 const add_movie_to_diary = async (req: Request, res: Response): Promise<void> => {
-    const movie = await Movie.findOne({ _id: req.params.movieID });
+    const movie = await Movie.findOneAndUpdate(
+        { _id: req.params.movieID },
+        { $inc: { watches: 1 } },
+        { new: true },
+    );
     await User.findOneAndUpdate(
         { _id: req.params.userID },
         { $addToSet: { watched_movies: req.params.movieID } },
@@ -33,7 +37,11 @@ const add_movie_to_diary = async (req: Request, res: Response): Promise<void> =>
 };
 
 const remove_movie_from_diary = async (req: Request, res: Response): Promise<void> => {
-    const movie = await Movie.findOne({ _id: req.params.movieID });
+    const movie = await Movie.findOneAndUpdate(
+        { _id: req.params.movieID },
+        { $inc: { watches: -1 } },
+        { new: true },
+    );
     if (!movie) {
         res.status(400).json({ message: 'Something went wrong' });
         return;
