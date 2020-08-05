@@ -5,6 +5,17 @@ import { validationResult } from 'express-validator';
 import Movie from '../models/Movie';
 import User from '../models/User';
 
+const get_one_review = async (req: Request, res: Response): Promise<void> => {
+    const review = await Review.findOne({ _id: req.params.id })
+        .populate('movie', '-reviews')
+        .populate('user', 'username profile_picture');
+    if (review) {
+        res.status(200).json(review);
+        return;
+    }
+    res.status(404).end();
+};
+
 const get_latest_reviews = async (req: Request, res: Response): Promise<void> => {
     const latestReviews = await Review.find({})
         .sort({ _id: -1 })
@@ -21,9 +32,13 @@ const delete_review = async (req: Request, res: Response): Promise<void> => {
 
 const like_review = async (req: Request, res: Response): Promise<void> => {
     const likedReview = await Review.findByIdAndUpdate(
-        req.params.id,
+        req.params.reviewID,
         { $inc: { likes: 1 } },
         { new: true },
+    );
+    await User.findOneAndUpdate(
+        { _id: req.params.userID },
+        { $addToSet: { liked_reviews: likedReview?._id } },
     );
     res.status(200).json(likedReview);
 };
@@ -98,4 +113,5 @@ export default {
     like_review,
     delete_review,
     get_latest_reviews,
+    get_one_review,
 };
