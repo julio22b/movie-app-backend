@@ -21,6 +21,12 @@ router.put(
 );
 
 router.post(
+    '/:userID/comment/:reviewID',
+    [check('content').isLength({ min: 1, max: 500 }).trim().escape()],
+    reviewController.post_comment,
+);
+
+router.post(
     '/:movieID/:userID/create',
     [check('content').trim().escape(), check('rating').isNumeric().trim().escape()],
     reviewController.post_review,

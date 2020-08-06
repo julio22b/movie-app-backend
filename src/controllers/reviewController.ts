@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import Movie from '../models/Movie';
 import User from '../models/User';
+import Comment, { IComment } from '../models/Comment';
 
 const get_one_review = async (req: Request, res: Response): Promise<void> => {
     const review = await Review.findOne({ _id: req.params.id })
@@ -63,6 +64,31 @@ const edit_review = async (req: Request, res: Response): Promise<void> => {
     res.status(200).json(updatedReview);
 };
 
+const post_comment = async (req: Request, res: Response): Promise<void> => {
+    const { content } = req.body as IComment;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
+    }
+
+    const comment = new Comment({
+        user: req.params.userID,
+        review: req.params.reviewID,
+        content,
+    });
+    const savedComment = await comment.save();
+    const updatedReview = await Review.findOneAndUpdate(
+        { _id: req.params.reviewID },
+        { $push: { comments: savedComment._id } },
+    ).populate('movie user');
+    if (updatedReview) {
+        res.status(200).json({
+            message: `You've posted a comment on ${updatedReview.user.username}'s review of ${updatedReview.movie.title} (${updatedReview.movie.year})`,
+        });
+    }
+};
+
 const post_review = async (req: Request, res: Response): Promise<void> => {
     const { content, rating, liked_movie } = req.body as IReview;
     const errors = validationResult(req);
@@ -114,4 +140,5 @@ export default {
     delete_review,
     get_latest_reviews,
     get_one_review,
+    post_comment,
 };
