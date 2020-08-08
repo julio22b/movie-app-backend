@@ -37,10 +37,10 @@ router.put(
 
 // ***************** EDIT BIO ****************** ///
 router.put(
-    '/:id/edit-bio',
-    [check('bio').trim().escape()],
+    '/:id',
+    [check('bio').trim().escape(), check('username', 'Invalid username').exists().trim().escape()],
     passport.authenticate('jwt', { session: false }),
-    userController.edit_bio,
+    userController.edit_profile,
 );
 
 // ************************ FOLLOWERS ******************************** ///

@@ -87,16 +87,22 @@ const remove_movie_from_watch_list = async (req: Request, res: Response): Promis
 
 // *************************** EDIT BIO ************************** ****///////
 
-const edit_bio = async (req: Request, res: Response): Promise<void> => {
-    const { bio } = req.body as IUser;
+const edit_profile = async (req: Request, res: Response): Promise<void> => {
+    const { bio, username, favorites } = req.body as IUser;
 
     if (!isValidInput(req)) {
-        res.status(400).json({ message: 'Wrong input' });
+        res.status(400).json({ message: 'Your username must be at least 1 character long' });
         return;
     }
 
-    await User.findOneAndUpdate({ _id: req.params.id }, { bio });
-    res.status(200).json({ message: 'Your bio has been updated' });
+    const updatedUser: Pick<IUser, 'bio' | 'username' | 'favorites'> = {
+        bio: bio || '',
+        username,
+        favorites,
+    };
+
+    await User.findOneAndUpdate({ _id: req.params.id }, updatedUser);
+    res.status(200).json({ message: 'Your profile has been updated' });
 };
 
 // *************************** FOLLOWERS/FOLLOWING ***************************//
@@ -190,7 +196,7 @@ export default {
     user_sign_up,
     get_all_users,
     user_log_in,
-    edit_bio,
+    edit_profile,
     remove_follower,
     add_follower,
     remove_movie_from_watch_list,
