@@ -12,6 +12,11 @@ const CommentSchema: Schema = new Schema({
     user: { type: Schema.Types.ObjectId, ref: 'User' },
     review: { type: Schema.Types.ObjectId, ref: 'Review' },
     content: { type: String, required: true },
+}, {
+    timestamps: {
+        createdAt: 'created_at',
+        updatedAt: 'updated_at',
+    },
 });
 
 export default mongoose.model<IComment>('Comment', CommentSchema);

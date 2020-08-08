@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.get('/:id', reviewController.get_one_review);
 
-router.get('/latest', reviewController.get_latest_reviews);
+router.get('/all/latest', reviewController.get_latest_reviews);
 
 router.delete('/:id', reviewController.delete_review);
 
@@ -22,13 +22,16 @@ router.put(
 
 router.post(
     '/:userID/comment/:reviewID',
-    [check('content').isLength({ min: 1, max: 500 }).trim().escape()],
+    [check('content', 'Enter a valid comment').isLength({ min: 1, max: 500 }).trim().escape()],
     reviewController.post_comment,
 );
 
 router.post(
     '/:movieID/:userID/create',
-    [check('content').trim().escape(), check('rating').isNumeric().trim().escape()],
+    [
+        check('content', 'Enter a valid comment').trim().escape(),
+        check('rating').isNumeric().trim().escape(),
+    ],
     reviewController.post_review,
 );
 

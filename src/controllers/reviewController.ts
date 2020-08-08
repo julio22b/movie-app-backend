@@ -9,7 +9,11 @@ import Comment, { IComment } from '../models/Comment';
 const get_one_review = async (req: Request, res: Response): Promise<void> => {
     const review = await Review.findOne({ _id: req.params.id })
         .populate('movie', '-reviews')
-        .populate('user', 'username profile_picture');
+        .populate('user', 'username profile_picture')
+        .populate({
+            path: 'comments',
+            populate: { path: 'user', model: 'User', select: 'username profile_picture' },
+        });
     if (review) {
         res.status(200).json(review);
         return;
@@ -72,19 +76,25 @@ const post_comment = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    const comment = new Comment({
+    const newComment = new Comment({
         user: req.params.userID,
         review: req.params.reviewID,
         content,
     });
-    const savedComment = await comment.save();
+    const savedComment = await newComment.save();
+    const comment = await savedComment
+        .populate({ path: 'user', select: 'username profile_picture' })
+        .execPopulate();
+
     const updatedReview = await Review.findOneAndUpdate(
         { _id: req.params.reviewID },
         { $push: { comments: savedComment._id } },
     ).populate('movie user');
+
     if (updatedReview) {
         res.status(200).json({
             message: `You've posted a comment on ${updatedReview.user.username}'s review of ${updatedReview.movie.title} (${updatedReview.movie.year})`,
+            comment,
         });
     }
 };
