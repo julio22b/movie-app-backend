@@ -43,7 +43,7 @@ passport.use(
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
         },
         function (payload: IUser, done) {
-            void User.findOne({ username: payload.username }, (err, user) => {
+            void User.findOne({ _id: payload._id }, (err, user) => {
                 if (err) return done(err);
                 if (!user) {
                     return done(null, false);

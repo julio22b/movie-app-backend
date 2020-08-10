@@ -38,7 +38,10 @@ router.put(
 // ***************** EDIT BIO ****************** ///
 router.put(
     '/:id',
-    [check('bio').trim().escape(), check('username', 'Invalid username').exists().trim().escape()],
+    [
+        check('bio').trim().escape(),
+        check('username', 'Invalid username').isLength({ min: 3, max: 25 }).trim().escape(),
+    ],
     passport.authenticate('jwt', { session: false }),
     userController.edit_profile,
 );

@@ -9,6 +9,7 @@ import Movie from 'src/models/Movie';
 const get_one_user = async (req: Request, res: Response): Promise<void> => {
     const user = await User.findOne({ _id: req.params.id })
         .populate('watched_movies followers following watch_list liked_movies', '-password')
+        .populate({ path: 'favorites', options: { retainNullValues: true } })
         .populate({
             path: 'reviews',
             populate: { path: 'movie', model: 'Movie', select: '-reviews' },
@@ -89,20 +90,22 @@ const remove_movie_from_watch_list = async (req: Request, res: Response): Promis
 
 const edit_profile = async (req: Request, res: Response): Promise<void> => {
     const { bio, username, favorites } = req.body as IUser;
-
+    console.log(favorites);
     if (!isValidInput(req)) {
         res.status(400).json({ message: 'Your username must be at least 1 character long' });
         return;
     }
 
-    const updatedUser: Pick<IUser, 'bio' | 'username' | 'favorites'> = {
+    const update: Pick<IUser, 'bio' | 'username' | 'favorites'> = {
         bio: bio || '',
         username,
         favorites,
     };
 
-    await User.findOneAndUpdate({ _id: req.params.id }, updatedUser);
-    res.status(200).json({ message: 'Your profile has been updated' });
+    const updatedUser = await User.findOneAndUpdate({ _id: req.params.id }, update, {
+        new: true,
+    }).populate('favorites');
+    res.status(200).json({ updatedUser, message: 'Your profile has been updated' });
 };
 
 // *************************** FOLLOWERS/FOLLOWING ***************************//

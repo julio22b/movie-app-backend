@@ -129,7 +129,7 @@ const post_review = async (req: Request, res: Response): Promise<void> => {
     );
     await Movie.findOneAndUpdate(
         { _id: req.params.movieID },
-        { $push: { reviews: savedReview }, $inc: { likes: liked_movie ? 1 : 0 } },
+        { $addToSet: { reviews: savedReview }, $inc: { likes: liked_movie ? 1 : 0 } },
     );
     res.status(200).json({
         savedReview,
