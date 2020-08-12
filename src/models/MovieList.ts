@@ -8,12 +8,14 @@ export interface IMovieList extends Document {
     description: string;
     movies: Array<IMovie>;
     user: IUser;
+    tags: string[];
 }
 
 const MovieListSchema: Schema = new Schema({
     title: { type: String, required: true },
     description: { type: String },
     movies: [{ type: Schema.Types.ObjectId, ref: 'Movie' }],
+    tags: [String],
 });
 
 MovieListSchema.plugin(mongooseUniqueValidator);

@@ -166,7 +166,7 @@ const user_log_in = async (req: Request, res: Response): Promise<void> => {
     }
     const user = await User.findOne({ username }).select('+password');
     if (user) {
-        const success = await bcrypt.compare(password, user?.password);
+        const success = await bcrypt.compare(password, user.password);
         if (success) {
             const token = jwt.sign(user.toJSON(), 'sadadasdasdasadasddsadas'); // THIS SECRET HAS TO BE CHANGED, WAS PUSHED TO GITHUB
             res.status(200).json({ username: user.username, token, id: user._id as string });
