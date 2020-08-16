@@ -13,6 +13,10 @@ const get_one_user = async (req: Request, res: Response): Promise<void> => {
         .populate({
             path: 'reviews',
             populate: { path: 'movie', model: 'Movie', select: '-reviews' },
+        })
+        .populate({
+            path: 'lists',
+            populate: { path: 'movies', model: 'Movie', select: '-reviews' },
         });
     if (!user) {
         res.status(400).json({ message: 'User not found' });
@@ -138,14 +142,8 @@ const remove_follower = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    await User.findOneAndUpdate(
-        { _id: follower._id },
-        { $pull: { following: { _id: req.params.followedUserID } } },
-    );
-    await User.findOneAndUpdate(
-        { _id: followedUser._id },
-        { $pull: { followers: { _id: req.params.followerID } } },
-    );
+    await User.findOneAndUpdate({ _id: follower._id }, { $pull: { following: followedUser._id } });
+    await User.findOneAndUpdate({ _id: followedUser._id }, { $pull: { followers: follower._id } });
 
     res.status(200).json({ message: `You have unfollowed ${followedUser.username}` });
 };
@@ -192,6 +190,7 @@ const user_sign_up = async (req: Request, res: Response): Promise<void> => {
     });
 
     await newUser.save();
+
     res.status(200).json({ message: 'Account created' });
 };
 

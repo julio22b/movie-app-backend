@@ -5,6 +5,8 @@ import passport from 'passport';
 
 const router = express.Router();
 
+router.get('/all', userController.get_all_users);
+
 router.get('/:id', userController.get_one_user);
 
 // **************************** ADD/REMOVE FROM WATCHED MOVIES/DIARY ****************//
@@ -96,7 +98,5 @@ router.post(
     ],
     userController.user_log_in,
 );
-
-router.get('/all', userController.get_all_users);
 
 export default router;

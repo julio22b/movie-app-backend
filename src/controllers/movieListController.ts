@@ -26,11 +26,7 @@ const edit_list = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    await User.findOneAndUpdate(
-        { _id: req.params.movieListID },
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        { $push: { movies: movie._id } },
-    );
+    await User.findOneAndUpdate({ _id: req.params.movieListID }, { $addToSet: { lists: list } });
     res.status(200).json({ message: `The list '${list.title}' has been updated` });
 };
 

@@ -22,9 +22,10 @@ export interface IReview extends Document {
     content: string;
     user: IUser;
     liked_movie: boolean;
-    watched_on?: string;
-    likes?: number;
-    rating?: Rating;
+    watched_on: string;
+    first_watch:boolean;
+    likes: number;
+    rating: Rating;
     comments: IComment['_id'];
 }
 
@@ -34,6 +35,7 @@ const ReviewSchema: Schema = new Schema(
         content: { type: String, required: true },
         user: { type: Schema.Types.ObjectId, ref: 'User' },
         liked_movie: { type: Boolean, required: true },
+        first_watch: Boolean,
         watched_on: String,
         likes: Number,
         rating: Number,

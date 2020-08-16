@@ -100,7 +100,7 @@ const post_comment = async (req: Request, res: Response): Promise<void> => {
 };
 
 const post_review = async (req: Request, res: Response): Promise<void> => {
-    const { content, rating, liked_movie } = req.body as IReview;
+    const { content, rating, liked_movie, first_watch, watched_on } = req.body as IReview;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         res.status(400).json({ errors: errors.array() });
@@ -112,6 +112,8 @@ const post_review = async (req: Request, res: Response): Promise<void> => {
         user: req.params.userID,
         content,
         liked_movie,
+        first_watch,
+        watched_on,
         rating: Number(rating),
         likes: 0,
     });
@@ -125,7 +127,7 @@ const post_review = async (req: Request, res: Response): Promise<void> => {
     const savedReview = await newReview.save();
     await User.findOneAndUpdate(
         { _id: req.params.userID },
-        { $push: { reviews: savedReview, watched_movies: reviewedMovie } },
+        { $push: { reviews: savedReview }, $addToSet: { watched_movies: reviewedMovie._id } },
     );
     await Movie.findOneAndUpdate(
         { _id: req.params.movieID },
