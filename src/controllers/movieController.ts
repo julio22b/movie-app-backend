@@ -4,12 +4,12 @@ import User from '../models/User';
 import isValidInput from './validationResult';
 
 const create_movie_instance = async (req: Request, res: Response): Promise<void> => {
-    const { title, likes } = req.body as IMovie;
+    const { title, likes, year } = req.body as IMovie;
     if (!isValidInput(req)) {
         res.status(400).json({ message: 'Something is wrong...' });
         return;
     }
-    const movieExists = await Movie.findOne({ title }).populate({
+    const movieExists = await Movie.findOne({ title, year }).populate({
         path: 'reviews',
         populate: { path: 'user', model: 'User', select: 'profile_picture username' },
     });

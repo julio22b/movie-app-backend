@@ -129,6 +129,12 @@ const post_review = async (req: Request, res: Response): Promise<void> => {
         { _id: req.params.userID },
         { $push: { reviews: savedReview }, $addToSet: { watched_movies: reviewedMovie._id } },
     );
+    if (liked_movie) {
+        await User.findOneAndUpdate(
+            { _id: req.params.userID },
+            { $addToSet: { liked_movies: reviewedMovie._id } },
+        );
+    }
     await Movie.findOneAndUpdate(
         { _id: req.params.movieID },
         { $addToSet: { reviews: savedReview }, $inc: { likes: liked_movie ? 1 : 0 } },

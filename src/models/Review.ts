@@ -1,21 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { IMovie } from './Movie';
 import { IUser } from './User';
-import mongooseUniqueValidator from 'mongoose-unique-validator';
 import { IComment } from './Comment';
-
-export enum Rating {
-    HALF_STAR = 0.5,
-    ONE_STAR = 1,
-    ONE_HALF_STAR = 1.5,
-    TWO_STARS = 2,
-    TWO_HALF_STARS = 2.5,
-    THREE_STARS = 3,
-    THREE_HALF_STARS = 3.5,
-    FOUR_STARS = 4,
-    FOUR_HALF_STARS = 4.5,
-    FIVE_STARS = 5,
-}
 
 export interface IReview extends Document {
     movie: IMovie;
@@ -23,18 +9,18 @@ export interface IReview extends Document {
     user: IUser;
     liked_movie: boolean;
     watched_on: string;
-    first_watch:boolean;
+    first_watch: boolean;
     likes: number;
-    rating: Rating;
+    rating: number;
     comments: IComment['_id'];
 }
 
 const ReviewSchema: Schema = new Schema(
     {
         movie: { type: Schema.Types.ObjectId, required: true, ref: 'Movie' },
-        content: { type: String, required: true },
+        content: { type: String },
         user: { type: Schema.Types.ObjectId, ref: 'User' },
-        liked_movie: { type: Boolean, required: true },
+        liked_movie: Boolean,
         first_watch: Boolean,
         watched_on: String,
         likes: Number,
@@ -48,7 +34,5 @@ const ReviewSchema: Schema = new Schema(
         },
     },
 );
-
-ReviewSchema.plugin(mongooseUniqueValidator);
 
 export default mongoose.model<IReview>('Review', ReviewSchema);
