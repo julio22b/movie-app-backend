@@ -16,6 +16,8 @@ interface IReviewBase {
     likes?: IReview['likes'];
 }
 
+let token: string;
+
 beforeAll(async () => {
     await connect();
     await api.post('/api/movies/create').send({
@@ -31,6 +33,9 @@ beforeAll(async () => {
         password: '123456',
         password_confirmation: '123456',
     });
+
+    const res = await api.post(`/api/users/log-in`).send({ username: 'julio', password: '123456' });
+    token = res.body.token;
 });
 
 describe('reviews crud actions', () => {
@@ -41,11 +46,13 @@ describe('reviews crud actions', () => {
         if (!movie || !user) {
             throw new Error('user or movie were not found');
         }
-
-        await api.post(`${baseUrl}/${movie._id}/${user._id}/create`).send({
-            content: `DENIS VILLENUEVE`,
-            rating: 5,
-        });
+        await api
+            .post(`${baseUrl}/${movie._id}/${user._id}/create`)
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                content: `DENIS VILLENUEVE`,
+                rating: 5,
+            });
     });
 
     test('should create a review of a movie and add it to the reviews[] of the user', async () => {
@@ -63,6 +70,7 @@ describe('reviews crud actions', () => {
 
         await api
             .post(`${baseUrl}/${movie._id}/${user._id}/create`)
+            .set('Authorization', `Bearer ${token}`)
             .send(newReview)
             .expect(200)
             .expect('Content-Type', jsonRegex)
@@ -92,6 +100,7 @@ describe('reviews crud actions', () => {
 
         await api
             .put(`${baseUrl}/${review._id}/edit`)
+            .set('Authorization', `Bearer ${token}`)
             .send(update)
             .expect(200)
             .expect('Content-Type', jsonRegex);
@@ -112,6 +121,7 @@ describe('reviews crud actions', () => {
 
         await api
             .put(`${baseUrl}/${review._id}/edit`)
+            .set('Authorization', `Bearer ${token}`)
             .send(update)
             .expect(200)
             .expect('Content-Type', jsonRegex);
@@ -125,11 +135,13 @@ describe('reviews crud actions', () => {
 
     test('should update the likes of a review', async () => {
         const review = await Review.findOne({ content: 'DENIS VILLENUEVE' });
-        if (!review || typeof review.likes !== 'number') {
-            throw new Error('Review not found or doesnt have likes');
+        const user = await User.findOne({ username: 'julio' });
+        if (!review || typeof review.likes !== 'number' || !user) {
+            throw new Error('Review or user not found or doesnt have likes');
         }
         await api
-            .put(`${baseUrl}/${review._id}/like`)
+            .put(`${baseUrl}/${user._id}/like/${review._id}`)
+            .set('Authorization', `Bearer ${token}`)
             .expect(200)
             .expect('Content-Type', jsonRegex);
 
@@ -145,6 +157,7 @@ describe('reviews crud actions', () => {
         }
         await api
             .delete(`${baseUrl}/${review._id}`)
+            .set('Authorization', `Bearer ${token}`)
             .expect(200)
             .expect('Content-Type', jsonRegex)
             .expect((res) => {

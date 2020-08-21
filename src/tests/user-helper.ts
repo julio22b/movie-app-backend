@@ -1,9 +1,13 @@
 import User, { IUser } from '../models/User';
 import Movie, { IMovie } from '../models/Movie';
 
-const createUsers = async (): Promise<void> => {
-    await User.create({ username: 'julio', password: '123456' });
-    await User.create({ username: 'eric', password: '123456' });
+const createUsers = async (): Promise<Record<string, IUser>> => {
+    const julio = await User.create({ username: 'julio', password: '123456' });
+    const eric = await User.create({ username: 'eric', password: '123456' });
+    return {
+        julio,
+        eric,
+    };
 };
 
 const returnUsers = async (): Promise<Record<string, IUser>> => {

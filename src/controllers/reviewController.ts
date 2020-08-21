@@ -21,6 +21,16 @@ const get_one_review = async (req: Request, res: Response): Promise<void> => {
     res.status(404).end();
 };
 
+const get_reviews_by_friends = async (req: Request, res: Response): Promise<void> => {
+    const user = await User.findOne({ _id: req.params.userID });
+    const reviews = await Review.find({ user: { $in: user?.following } })
+        .limit(Number(req.query.amount))
+        .sort({ _id: '-1' })
+        .populate('movie', 'title poster')
+        .populate('user', 'username profile_picture');
+    res.status(200).json(reviews);
+};
+
 const get_latest_reviews = async (req: Request, res: Response): Promise<void> => {
     const latestReviews = await Review.find({})
         .sort({ _id: -1 })
@@ -159,4 +169,5 @@ export default {
     get_latest_reviews,
     get_one_review,
     post_comment,
+    get_reviews_by_friends,
 };

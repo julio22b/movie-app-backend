@@ -12,6 +12,16 @@ const get_list = async (req: Request, res: Response): Promise<void> => {
     res.status(200).json(list);
 };
 
+const get_lists_by_friends = async (req: Request, res: Response): Promise<void> => {
+    const user = await User.findOne({ _id: req.params.userID });
+    const lists = await MovieList.find({ user: { $in: user?.following } })
+        .limit(Number(req.query.amount))
+        .sort({ _id: '-1' })
+        .populate('movies', 'title poster')
+        .populate('user', 'username profile_picture');
+    res.status(200).json(lists);
+};
+
 const delete_list = async (req: Request, res: Response): Promise<void> => {
     const deletedList = await MovieList.findOneAndDelete({ _id: req.params.movieListID });
     if (deletedList)
@@ -19,14 +29,17 @@ const delete_list = async (req: Request, res: Response): Promise<void> => {
 };
 
 const edit_list = async (req: Request, res: Response): Promise<void> => {
-    const list = await MovieList.findOne({ _id: req.params.movieListID });
     const user = await User.findOne({ _id: req.query.username });
+    const list = await MovieList.findOneAndUpdate(
+        { _id: req.params.movieListID },
+        { movies: req.body.list },
+        { new: true },
+    );
     if (!list || !user) {
         res.status(400).json({ message: 'Something went wrong' });
         return;
     }
 
-    await User.findOneAndUpdate({ _id: req.params.movieListID }, { $addToSet: { lists: list } });
     res.status(200).json({ message: `The list '${list.title}' has been updated` });
 };
 
@@ -55,4 +68,5 @@ export default {
     edit_list,
     get_list,
     delete_list,
+    get_lists_by_friends,
 };

@@ -1,5 +1,3 @@
-import dotenv from 'dotenv';
-dotenv.config();
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import path from 'path';
@@ -9,6 +7,7 @@ import cors from 'cors';
 import express, { Request, Response, NextFunction } from 'express';
 import { BAD_REQUEST } from 'http-status-codes';
 import 'express-async-errors';
+require('dotenv').config();
 
 // PASSPORT
 import passport from 'passport';
@@ -55,9 +54,9 @@ passport.use(
 );
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '5mb' }));
 app.use(passport.initialize());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false, limit: '5mb' }));
 app.use(cookieParser());
 
 // Show routes called in console during development
@@ -89,15 +88,17 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
  *                              Serve front-end content
  ***********************************************************************************/
 
-const staticDir = path.join(__dirname, 'public');
+app.use(express.static(path.join(__dirname, 'build')));
+
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'build', 'index.html'));
+});
 
 // Start the server
 const port = Number(process.env.PORT || 3001);
 app.listen(port, () => {
     logger.info(`Express server started on port: ${port}`);
 });
-
-app.use(express.static(staticDir));
 
 // Export express instance
 export default app;

@@ -6,7 +6,7 @@ import { IReview } from './Review';
 
 export interface IUser extends Document {
     username: string;
-    profile_picture: string;
+    profile_picture?: string;
     bio?: string;
     password: string;
     reviews?: IReview[];

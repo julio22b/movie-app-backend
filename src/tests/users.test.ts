@@ -64,13 +64,23 @@ describe('Validate user sign-up and log in', () => {
     });
 });
 
-const token =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXZpZXdzIjpbXSwid2F0Y2hlZF9tb3ZpZXMiOltdLCJmb2xsb3dlcnMiOltdLCJmb2xsb3dpbmciOltdLCJ3YXRjaF9saXN0IjpbXSwiZmF2b3JpdGVzIjpbXSwibGlzdHMiOltdLCJfaWQiOiI1ZjIzMDQzMWU3ZTFhODA4OTBiZWMwMjAiLCJ1c2VybmFtZSI6Imp1bGlvIiwicGFzc3dvcmQiOiIkMmEkMTAkUlN2Qk5yLjBEcFdFR2JRMnoySk8zLmFSUHV2MXVlZm9UalAzME5NaXBGRzBqb2V5M3phVWEiLCJfX3YiOjAsImlhdCI6MTU5NjEzODY2MH0.ELDT3jOlOPrB3A6ntHZYhAJkYch6XpmAViVzbBodM30';
+let token: string;
 
 describe('Follow and unfollow users', () => {
     beforeEach(async () => {
         await clearDatabase();
         await userHelper.createUsers();
+
+        const testUser = {
+            username: 'testuser',
+            password: '123456',
+            password_confirmation: '123456',
+        };
+        await api.post(`${baseUrl}/sign-up`).send(testUser);
+        const res = await api
+            .post(`${baseUrl}/log-in`)
+            .send({ username: testUser.username, password: testUser.password });
+        token = res.body.token;
     });
 
     test('should add user to follower(userB)/following(userA) lists when userA follows userB', async () => {
@@ -118,6 +128,16 @@ describe('Test adding and removing movies from watch list', () => {
         await clearDatabase();
         await userHelper.createUsers();
         await userHelper.createMovie();
+        const testUser = {
+            username: 'testuser',
+            password: '123456',
+            password_confirmation: '123456',
+        };
+        await api.post(`${baseUrl}/sign-up`).send(testUser);
+        const res = await api
+            .post(`${baseUrl}/log-in`)
+            .send({ username: testUser.username, password: testUser.password });
+        token = res.body.token;
     });
 
     test("should add a movie to an user's watch list", async () => {
@@ -151,6 +171,16 @@ describe('diary/watched movies removal and addition tests', () => {
         await clearDatabase();
         await userHelper.createUsers();
         await userHelper.createMovie();
+        const testUser = {
+            username: 'testuser',
+            password: '123456',
+            password_confirmation: '123456',
+        };
+        await api.post(`${baseUrl}/sign-up`).send(testUser);
+        const res = await api
+            .post(`${baseUrl}/log-in`)
+            .send({ username: testUser.username, password: testUser.password });
+        token = res.body.token;
     });
 
     test("should add a movie to a user' diary", async () => {

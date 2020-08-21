@@ -15,6 +15,8 @@ interface IMovieListBase {
     description?: IMovieList['description'];
 }
 
+let token: string;
+
 beforeAll(async () => {
     await connect();
     await api.post('/api/users/sign-up').send({
@@ -30,11 +32,14 @@ beforeAll(async () => {
         poster: 'some url',
     });
 
+    const res = await api.post('/api/users/log-in').send({ username: 'julio', password: '123456' });
+    token = res.body.token;
+
     const user = await User.findOne({ username: 'julio' });
     if (!user) {
         throw new Error('User not found');
     }
-    await api.post(`${baseUrl}/create/${user._id}`).send({
+    await api.post(`${baseUrl}/${user._id}`).set('Authorization', `Bearer ${token}`).send({
         title: 'Amy Adam Movies',
         description: 'Movies where Amy Adams is a goddess',
     });
@@ -53,12 +58,13 @@ describe('movie list operations', () => {
             description: 'A list of my favorite movies from 2020',
         };
         await api
-            .post(`${baseUrl}/create/${user._id}`)
+            .post(`${baseUrl}/${user._id}`)
+            .set('Authorization', `Bearer ${token}`)
             .send(newMovieList)
             .expect(200)
             .expect('Content-Type', jsonRegex)
             .expect((res) => {
-                expect(res.body.message).toBe(`The list '${newMovieList.title}' has been created`);
+                expect(res.body.message).toBe(`You've created the list '${newMovieList.title}'`);
             });
         const movieListsAtEnd = await MovieList.find({});
         expect(movieListsAtEnd).toHaveLength(movieListsAtStart.length + 1);
@@ -80,7 +86,9 @@ describe('movie list operations', () => {
         }
 
         await api
-            .put(`${baseUrl}/${movieList._id}/add-movie/${movie._id}`)
+            .put(`${baseUrl}/${movieList._id}?username=julio`)
+            .set('Authorization', `Bearer ${token}`)
+            .send(movieList.movies.concat(movie))
             .expect(200)
             .expect('Content-Type', jsonRegex)
             .expect((res) =>
@@ -102,6 +110,7 @@ describe('movie list operations', () => {
 
         await api
             .put(`${baseUrl}/${movieList._id}/remove-movie/${movie._id}`)
+            .set('Authorization', `Bearer ${token}`)
             .expect(200)
             .expect('Content-Type', jsonRegex)
             .expect((res) =>
@@ -121,9 +130,14 @@ describe('movie list operations', () => {
 
         await api
             .delete(`${baseUrl}/${movieListToDelete._id}`)
+            .set('Authorization', `Bearer ${token}`)
             .expect(200)
             .expect('Content-Type', jsonRegex)
-            .expect((res) => expect(res.body.message).toBe('List has been deleted'));
+            .expect((res) =>
+                expect(res.body.message).toBe(
+                    `The list '${movieListToDelete.title}' has been deleted`,
+                ),
+            );
 
         const movieListsAtEnd = await MovieList.find({});
         expect(movieListsAtEnd).toHaveLength(movieListsAtStart.length - 1);

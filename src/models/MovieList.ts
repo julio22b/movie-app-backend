@@ -16,6 +16,7 @@ const MovieListSchema: Schema = new Schema({
     description: { type: String },
     movies: [{ type: Schema.Types.ObjectId, ref: 'Movie' }],
     tags: [String],
+    user: { type: Schema.Types.ObjectId, ref: 'User' },
 });
 
 MovieListSchema.plugin(mongooseUniqueValidator);

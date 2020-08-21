@@ -2,9 +2,16 @@ import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import User, { IUser } from '../models/User';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt, { Secret } from 'jsonwebtoken';
 import isValidInput from './validationResult';
-import Movie from 'src/models/Movie';
+import Movie from '../models/Movie';
+import { v2 as cloudinary } from 'cloudinary';
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    api_key: process.env.CLOUDINARY_API_KEY,
+});
 
 const get_one_user = async (req: Request, res: Response): Promise<void> => {
     const user = await User.findOne({ _id: req.params.id })
@@ -93,23 +100,32 @@ const remove_movie_from_watch_list = async (req: Request, res: Response): Promis
 // *************************** EDIT BIO ************************** ****///////
 
 const edit_profile = async (req: Request, res: Response): Promise<void> => {
-    const { bio, username, favorites } = req.body as IUser;
-    console.log(favorites);
+    const { bio, username, favorites, profile_picture } = req.body as IUser;
     if (!isValidInput(req)) {
         res.status(400).json({ message: 'Your username must be at least 1 character long' });
         return;
     }
 
-    const update: Pick<IUser, 'bio' | 'username' | 'favorites'> = {
-        bio: bio || '',
-        username,
-        favorites,
-    };
+    const user = await User.findOne({ username });
+    if (user || username === 'settings') {
+        res.status(400).json({ message: 'That username is already taken' });
+        return;
+    }
 
-    const updatedUser = await User.findOneAndUpdate({ _id: req.params.id }, update, {
-        new: true,
-    }).populate('favorites');
-    res.status(200).json({ updatedUser, message: 'Your profile has been updated' });
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    void cloudinary.uploader.upload(profile_picture as string, {}, async (error, file) => {
+        const update: Pick<IUser, 'bio' | 'username' | 'favorites' | 'profile_picture'> = {
+            bio: bio || '',
+            username,
+            favorites,
+            profile_picture: (file?.url as unknown) as string,
+        };
+
+        const updatedUser = await User.findOneAndUpdate({ _id: req.params.id }, update, {
+            new: true,
+        }).populate('favorites');
+        res.status(200).json({ updatedUser, message: 'Your profile has been updated' });
+    });
 };
 
 // *************************** FOLLOWERS/FOLLOWING ***************************//
@@ -166,7 +182,7 @@ const user_log_in = async (req: Request, res: Response): Promise<void> => {
     if (user) {
         const success = await bcrypt.compare(password, user.password);
         if (success) {
-            const token = jwt.sign(user.toJSON(), 'sadadasdasdasadasddsadas'); // THIS SECRET HAS TO BE CHANGED, WAS PUSHED TO GITHUB
+            const token = jwt.sign(user.toJSON(), process.env.JWT_SECRET as Secret);
             res.status(200).json({ username: user.username, token, id: user._id as string });
             return;
         }
