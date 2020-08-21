@@ -1,7 +1,6 @@
 node_modules
 env/
 .rest
-src/mongoConfig.ts
 # Logs
 logs
 *.log
