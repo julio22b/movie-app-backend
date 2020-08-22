@@ -38,7 +38,7 @@ const app = express();
 passport.use(
     new jwtStrategy(
         {
-            secretOrKey: 'sadadasdasdasadasddsadas',
+            secretOrKey: process.env.JWT_SECRET,
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
         },
         function (payload: IUser, done) {

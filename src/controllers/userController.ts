@@ -6,6 +6,7 @@ import jwt, { Secret } from 'jsonwebtoken';
 import isValidInput from './validationResult';
 import Movie from '../models/Movie';
 import { v2 as cloudinary } from 'cloudinary';
+import MovieList, { IMovieList } from '../models/MovieList';
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -191,6 +192,17 @@ const user_log_in = async (req: Request, res: Response): Promise<void> => {
     return;
 };
 
+const Movies2019 = [
+    '1917',
+    'Parasite',
+    'The Lighthouse',
+    'Midsommar',
+    'Ad Astra',
+    'Portrait of a Lady on Fire',
+    'Marriage Story',
+    'Uncut Gems',
+];
+
 const user_sign_up = async (req: Request, res: Response): Promise<void> => {
     const { username, password } = req.body as IUser;
     const errors = validationResult(req);
@@ -205,8 +217,33 @@ const user_sign_up = async (req: Request, res: Response): Promise<void> => {
         password: hashedPassword,
     });
 
-    await newUser.save();
+    const savedUser = await newUser.save();
+    const julio = await User.findOneAndUpdate(
+        { username: 'julio' },
+        { $addToSet: { followers: savedUser._id, following: savedUser._id } },
+        { new: true },
+    );
+    if (julio) {
+        await User.findOneAndUpdate(
+            { _id: savedUser._id },
+            { $addToSet: { followers: julio._id, following: julio?._id } },
+        );
+    }
 
+    const movies = await Movie.find({
+        title: {
+            $in: Movies2019,
+        },
+        year: '2019',
+    });
+    const newMovieList: IMovieList = new MovieList({
+        title: `2019's Best Films`,
+        description: 'This list was automatically created for showcasing purposes.',
+        movies,
+        user: savedUser._id,
+    });
+    const savedList = await newMovieList.save();
+    await User.findOneAndUpdate({ username }, { $push: { lists: savedList } });
     res.status(200).json({ message: 'Account created' });
 };
 
