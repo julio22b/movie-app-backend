@@ -2,7 +2,7 @@ POST http://localhost:3001/api/users/sign-up HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "julio",
+    "username": "test3",
     "password": "123456",
     "password_confirmation": "123456"
 }
@@ -48,7 +48,7 @@ GET http://localhost:3001/api/reviews/latest?amount=10 HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXZpZXdzIjpbXSwid2F0Y2hlZF9tb3ZpZXMiOltdLCJmb2xsb3dlcnMiOltdLCJmb2xsb3dpbmciOltdLCJ3YXRjaF9saXN0IjpbXSwiZmF2b3JpdGVzIjpbXSwibGlzdHMiOltdLCJfaWQiOiI1ZjIzMDQzMWU3ZTFhODA4OTBiZWMwMjAiLCJ1c2VybmFtZSI6Imp1bGlvIiwicGFzc3dvcmQiOiIkMmEkMTAkUlN2Qk5yLjBEcFdFR2JRMnoySk8zLmFSUHV2MXVlZm9UalAzME5NaXBGRzBqb2V5M3phVWEiLCJfX3YiOjAsImlhdCI6MTU5NjI5NjY0NH0.8CK3Jmi6ZLySykw0w6AeQc9nJgLJDzmiR_u9iY9pm-I
 
 ###
-GET http://localhost:3001/api/users/5f230431e7e1a80890bec020 HTTP/1.1
+GET http://localhost:3001/api/users/5f410ee67bcd0d04a6d5d192 HTTP/1.1
 
 ###
 GET http://localhost:3001/api/reviews/5f2adf2d8b782d089ac4e9ce HTTP/1.1

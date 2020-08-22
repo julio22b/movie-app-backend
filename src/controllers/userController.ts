@@ -108,9 +108,11 @@ const edit_profile = async (req: Request, res: Response): Promise<void> => {
     }
 
     const user = await User.findOne({ username });
-    if (user || username === 'settings') {
-        res.status(400).json({ message: 'That username is already taken' });
-        return;
+    if (user?.username !== username) {
+        if (user || username === 'settings') {
+            res.status(400).json({ message: 'That username is already taken' });
+            return;
+        }
     }
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
