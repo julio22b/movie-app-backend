@@ -2,7 +2,7 @@
     "name": "movie-app-backend",
     "version": "0.0.0",
     "scripts": {
-        "build": "node build.js",
+        "build": "tsc",
         "lint": "eslint -c .eslintrc --ext .ts ./src",
         "start": "ts-node ./src/index.ts",
         "dev": "NODE_ENV=development nodemon ./src",
