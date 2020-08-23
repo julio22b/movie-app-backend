@@ -80,7 +80,7 @@ describe('add and update movie documents', () => {
             .expect('Content-Type', jsonRegex);
 
         const afterLikingMovie = await Movie.findOne({ title: 'Phantom Thread' });
-        expect(afterLikingMovie?.likes).toBe(beforeLikingMovie.likes + 1);
+        expect(afterLikingMovie?.likes).toBe(beforeLikingMovie.likes as number + 1);
     });
 
     test('should unlike a movie', async () => {
@@ -96,7 +96,7 @@ describe('add and update movie documents', () => {
             .expect('Content-Type', jsonRegex);
 
         const afterLikingMovie = await Movie.findOne({ title: 'Phantom Thread' });
-        expect(afterLikingMovie?.likes).toBe(beforeLikingMovie.likes - 1);
+        expect(afterLikingMovie?.likes).toBe(beforeLikingMovie.likes as number - 1);
     });
 });
 

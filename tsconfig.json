@@ -18,7 +18,6 @@
         "allowSyntheticDefaultImports": true,
         "forceConsistentCasingInFileNames": true,
         "isolatedModules": true,
-        "noEmit": true,
         "paths": {
             "@daos/*": ["src/daos/*"],
             "@entities/*": ["src/entities/*"],

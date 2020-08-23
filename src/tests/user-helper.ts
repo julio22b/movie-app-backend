@@ -26,7 +26,7 @@ const createMovie = async (): Promise<void> => {
         year: '2016',
         synopsis: 'Ryan Gosling',
         poster: 'urlurlurl',
-    });
+    } as IMovie);
 };
 
 interface Mix {
