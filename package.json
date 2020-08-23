@@ -4,7 +4,7 @@
     "scripts": {
         "build": "tsc",
         "lint": "eslint -c .eslintrc --ext .ts ./src",
-        "start": "build && node /dist/src/index.js",
+        "start": "tsc && node /dist/index.js",
         "dev": "NODE_ENV=development nodemon ./src",
         "test": "NODE_ENV=test jest --runInBand ./src/tests/",
         "build:ui": "rm -rf build && cd ../movie-app-frontend && npm run build && cp -r build ../movie-app-backend"
