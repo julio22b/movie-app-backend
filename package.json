@@ -88,6 +88,6 @@
         "mongodb-memory-server": "^6.6.1",
         "nodemon": "^2.0.4",
         "supertest": "^4.0.2",
-        "tsconfig-paths": "^3.9.0"
+        "tsconfig-paths": "^3.10.1"
     }
 }
