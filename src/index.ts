@@ -42,7 +42,7 @@ passport.use(
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
         },
         function (payload: IUser, done) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            // @ts-ignore
             void User.findOne({ _id: payload._id }, (err, user) => {
                 if (err) return done(err);
                 if (!user) {
