@@ -168,8 +168,7 @@ describe('reviews crud actions', () => {
     });
 });
 
-afterAll(async (done) => {
+afterAll(async () => {
     await clearDatabase();
     await closeDatabase();
-    done();
 });
