@@ -25,7 +25,7 @@ const get_reviews_by_friends = async (req: Request, res: Response): Promise<void
     const user = await User.findOne({ _id: req.params.userID });
     const reviews = await Review.find({ user: { $in: user?.following } })
         .limit(Number(req.query.amount))
-        .sort({ _id: '-1' })
+        .sort({ _id: 'desc' })
         .populate('movie', 'title poster')
         .populate('user', 'username profile_picture');
     res.status(200).json(reviews);
@@ -33,7 +33,7 @@ const get_reviews_by_friends = async (req: Request, res: Response): Promise<void
 
 const get_latest_reviews = async (req: Request, res: Response): Promise<void> => {
     const latestReviews = await Review.find({})
-        .sort({ _id: -1 })
+        .sort({ _id: 'desc' })
         .limit(Number(req.query.amount))
         .populate('user', 'username')
         .populate('movie');
@@ -93,8 +93,7 @@ const post_comment = async (req: Request, res: Response): Promise<void> => {
     });
     const savedComment = await newComment.save();
     const comment = await savedComment
-        .populate({ path: 'user', select: 'username profile_picture' })
-        .execPopulate();
+        .populate({ path: 'user', select: 'username profile_picture' });
 
     const updatedReview = await Review.findOneAndUpdate(
         { _id: req.params.reviewID },

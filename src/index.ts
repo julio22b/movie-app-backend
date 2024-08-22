@@ -38,18 +38,16 @@ const app = express();
 passport.use(
     new jwtStrategy(
         {
-            secretOrKey: process.env.JWT_SECRET,
+            secretOrKey: process.env.JWT_SECRET as string,
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
         },
         function (payload: IUser, done) {
-            // @ts-ignore
-            void User.findOne({ _id: payload._id }, (err, user) => {
-                if (err) return done(err);
-                if (!user) {
-                    return done(null, false);
-                }
+            const user = User.findOne({ _id: payload._id })
+
+            if (!user) {
+                return done(null, false);
+            }
                 return done(null, user);
-            });
         },
     ),
 );

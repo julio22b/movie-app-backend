@@ -16,7 +16,7 @@ const get_lists_by_friends = async (req: Request, res: Response): Promise<void> 
     const user = await User.findOne({ _id: req.params.userID });
     const lists = await MovieList.find({ user: { $in: user?.following } })
         .limit(Number(req.query.amount))
-        .sort({ _id: '-1' })
+        .sort({ _id: 'desc' })
         .populate('movies', 'title poster')
         .populate('user', 'username profile_picture');
     res.status(200).json(lists);
