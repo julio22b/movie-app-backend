@@ -116,7 +116,7 @@ const edit_profile = async (req: Request, res: Response): Promise<void> => {
         }).populate('favorites');
 
         res.status(200).json({ updatedUser, message: 'Your profile has been updated' });
-    } catch (error) {
+    } catch (e) {
         res.status(500).json({ message: 'Error uploading image' });
     }
 };
@@ -170,7 +170,7 @@ const user_log_in = async (req: Request, res: Response): Promise<void> => {
         const success = await bcrypt.compare(password, user.password);
         if (success) {
             const token = jwt.sign(user.toJSON(), process.env.JWT_SECRET as Secret);
-            res.status(200).json({ username: user.username, token, id: user._id.toString() });
+            res.status(200).json({ username: user.username, token, id: String(user._id) });
             return;
         }
     }
