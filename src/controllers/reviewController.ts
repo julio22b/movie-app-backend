@@ -46,15 +46,8 @@ const delete_review = async (req: Request, res: Response): Promise<void> => {
 };
 
 const like_review = async (req: Request, res: Response): Promise<void> => {
-    const likedReview = await Review.findByIdAndUpdate(
-        req.params.reviewID,
-        { $inc: { likes: 1 } },
-        { new: true },
-    );
-    await User.findOneAndUpdate(
-        { _id: req.params.userID },
-        { $addToSet: { liked_reviews: likedReview?._id } },
-    );
+    const likedReview = await Review.findByIdAndUpdate(req.params.reviewID, { $inc: { likes: 1 } }, { new: true });
+    await User.findOneAndUpdate({ _id: req.params.userID }, { $addToSet: { liked_reviews: likedReview?._id } });
     res.status(200).json(likedReview);
 };
 
@@ -66,11 +59,7 @@ const edit_review = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    const updatedReview = await Review.findByIdAndUpdate(
-        req.params.id,
-        { content, rating },
-        { new: true },
-    );
+    const updatedReview = await Review.findByIdAndUpdate(req.params.id, { content, rating }, { new: true });
     if (!updatedReview) {
         res.status(400).json({ message: 'Something went wrong...' });
         return;
@@ -92,8 +81,7 @@ const post_comment = async (req: Request, res: Response): Promise<void> => {
         content,
     });
     const savedComment = await newComment.save();
-    const comment = await savedComment
-        .populate({ path: 'user', select: 'username profile_picture' });
+    const comment = await savedComment.populate({ path: 'user', select: 'username profile_picture' });
 
     const updatedReview = await Review.findOneAndUpdate(
         { _id: req.params.reviewID },
@@ -116,6 +104,12 @@ const post_review = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
+    const reviewedMovie = await Movie.findById(req.params.movieID);
+    if (!reviewedMovie) {
+        res.status(404).json({ message: 'Movie not found' });
+        return;
+    }
+
     const newReview: IReview = new Review({
         movie: req.params.movieID,
         user: req.params.userID,
@@ -123,15 +117,9 @@ const post_review = async (req: Request, res: Response): Promise<void> => {
         liked_movie,
         first_watch,
         watched_on,
-        rating: Number(rating),
+        rating,
         likes: 0,
     });
-
-    const reviewedMovie = await Movie.findOne({ _id: req.params.movieID });
-    if (!reviewedMovie) {
-        res.status(400).json({ message: 'Something went wrong' });
-        return;
-    }
 
     const savedReview = await newReview.save();
     await User.findOneAndUpdate(
@@ -139,10 +127,7 @@ const post_review = async (req: Request, res: Response): Promise<void> => {
         { $push: { reviews: savedReview }, $addToSet: { watched_movies: reviewedMovie._id } },
     );
     if (liked_movie) {
-        await User.findOneAndUpdate(
-            { _id: req.params.userID },
-            { $addToSet: { liked_movies: reviewedMovie._id } },
-        );
+        await User.findOneAndUpdate({ _id: req.params.userID }, { $addToSet: { liked_movies: reviewedMovie._id } });
     }
     await Movie.findOneAndUpdate(
         { _id: req.params.movieID },

@@ -3,11 +3,10 @@ import morgan from 'morgan';
 import path from 'path';
 import helmet from 'helmet';
 import cors from 'cors';
+import 'dotenv/config';
 
 import express, { Request, Response, NextFunction } from 'express';
 import { BAD_REQUEST } from 'http-status-codes';
-import 'express-async-errors';
-require('dotenv').config();
 
 // PASSPORT
 import passport from 'passport';
@@ -21,12 +20,11 @@ import reviewRouter from './routes/reviews';
 import movieListRouter from './routes/movieLists';
 
 import logger from './shared/Logger';
-import User, { IUser } from './models/User';
+import User from './models/User';
+import './mongoConfig';
 
 // MONGOOSE
-if (process.env.NODE_ENV !== 'test') {
-    require('./mongoConfig');
-}
+// mongoConfig.ts handles the connection logic
 
 // Init express
 const app = express();
@@ -41,18 +39,26 @@ passport.use(
             secretOrKey: process.env.JWT_SECRET as string,
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
         },
-        function (payload: IUser, done) {
-            const user = User.findOne({ _id: payload._id })
-
-            if (!user) {
-                return done(null, false);
-            }
+        async function (payload: { _id: string }, done) {
+            try {
+                const user = await User.findOne({ _id: payload._id });
+                if (!user) {
+                    return done(null, false);
+                }
                 return done(null, user);
+            } catch (err) {
+                return done(err, false);
+            }
         },
     ),
 );
 
-app.use(cors());
+app.use(
+    cors({
+        origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+        credentials: true,
+    }),
+);
 app.use(express.json({ limit: '5mb' }));
 app.use(passport.initialize());
 app.use(express.urlencoded({ extended: false, limit: '5mb' }));
@@ -81,16 +87,6 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     return res.status(BAD_REQUEST).json({
         error: err.message,
     });
-});
-
-/************************************************************************************
- *                              Serve front-end content
- ***********************************************************************************/
-
-app.use(express.static(path.join(__dirname, '../build')));
-
-app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../build', 'index.html'));
 });
 
 // Start the server
