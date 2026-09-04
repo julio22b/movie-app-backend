@@ -7,6 +7,8 @@ const router = express.Router();
 
 router.get('/all', userController.get_all_users);
 
+router.get('/by-username/:username', userController.get_user_by_username);
+
 router.get('/:id', userController.get_one_user);
 
 // **************************** ADD/REMOVE FROM WATCHED MOVIES/DIARY ****************//
@@ -40,10 +42,7 @@ router.put(
 // ***************** EDIT BIO ****************** ///
 router.put(
     '/:id',
-    [
-        check('bio').trim().escape(),
-        check('username', 'Invalid username').isLength({ min: 3, max: 25 }).trim().escape(),
-    ],
+    [check('bio').trim(), check('username', 'Invalid username').isLength({ min: 3, max: 25 }).trim()],
     passport.authenticate('jwt', { session: false }),
     userController.edit_profile,
 );
@@ -69,12 +68,8 @@ router.post(
     [
         check('username', 'Your username should be within 3 and 25 characters long')
             .isLength({ min: 3, max: 25 })
-            .trim()
-            .escape(),
-        check('password', 'Password must be at least 6 characters long')
-            .isLength({ min: 6 })
-            .trim()
-            .escape(),
+            .trim(),
+        check('password', 'Password must be at least 6 characters long').isLength({ min: 6 }).trim().escape(),
         check('password_confirmation', 'Passwords must match')
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             .custom((val, { req }) => val === req.body.password)
@@ -89,12 +84,8 @@ router.post(
     [
         check('username', 'Your username should be within 3 and 15 characters long')
             .isLength({ min: 3, max: 15 })
-            .trim()
-            .escape(),
-        check('password', 'Password must be at least 6 characters long')
-            .isLength({ min: 6 })
-            .trim()
-            .escape(),
+            .trim(),
+        check('password', 'Password must be at least 6 characters long').isLength({ min: 6 }).trim().escape(),
     ],
     userController.user_log_in,
 );

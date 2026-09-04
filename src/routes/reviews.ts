@@ -30,14 +30,14 @@ router.put(
 router.put(
     '/:id/edit',
     passport.authenticate('jwt', { session: false }),
-    [check('content').trim().escape(), check('rating').isNumeric().trim().escape()],
+    [check('content').trim(), check('rating').isNumeric().trim()],
     reviewController.edit_review,
 );
 
 router.post(
     '/:userID/comment/:reviewID',
     passport.authenticate('jwt', { session: false }),
-    [check('content', 'Enter a valid comment').isLength({ min: 1, max: 500 }).trim().escape()],
+    [check('content', 'Enter a valid comment').isLength({ min: 1, max: 500 }).trim()],
     reviewController.post_comment,
 );
 
@@ -45,8 +45,8 @@ router.post(
     '/:movieID/:userID/create',
     passport.authenticate('jwt', { session: false }),
     [
-        check('content', 'Enter a valid comment').trim().escape(),
-        check('rating').isNumeric().trim().escape(),
+        check('content', 'Enter a valid comment').trim(),
+        check('rating').isNumeric().trim(),
     ],
     reviewController.post_review,
 );

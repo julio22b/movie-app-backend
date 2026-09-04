@@ -4,7 +4,7 @@ import { check } from 'express-validator';
 import passport from 'passport';
 const router = express.Router();
 
-router.post('/create', [check('*').trim().escape()], movieController.create_movie_instance);
+router.post('/create', [check('*').trim()], movieController.create_movie_instance);
 
 router.put('/:userID/like/:movieID', passport.authenticate('jwt', { session: false }),movieController.like_movie);
 

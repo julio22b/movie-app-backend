@@ -7,6 +7,7 @@ import isValidInput from './validationResult';
 import Movie from '../models/Movie';
 import { v2 as cloudinary } from 'cloudinary';
 import MovieList, { IMovieList } from '../models/MovieList';
+import { FilterQuery } from 'mongoose';
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -14,8 +15,8 @@ cloudinary.config({
     api_key: process.env.CLOUDINARY_API_KEY,
 });
 
-const get_one_user = async (req: Request, res: Response): Promise<void> => {
-    const user = await User.findOne({ _id: req.params.id })
+const populateUser = (filter: FilterQuery<IUser>) =>
+    User.findOne(filter)
         .populate('watched_movies followers following watch_list liked_movies', '-password')
         .populate({ path: 'favorites', options: { retainNullValues: true } })
         .populate({
@@ -26,8 +27,21 @@ const get_one_user = async (req: Request, res: Response): Promise<void> => {
             path: 'lists',
             populate: { path: 'movies', model: 'Movie', select: '-reviews' },
         });
+
+const get_one_user = async (req: Request, res: Response): Promise<void> => {
+    const user = await populateUser({ _id: req.params.id });
     if (!user) {
-        res.status(400).json({ message: 'User not found' });
+        res.status(404).json({ message: 'User not found' });
+        return;
+    }
+    res.status(200).json(user);
+};
+
+const get_user_by_username = async (req: Request, res: Response): Promise<void> => {
+    const user = await populateUser({ username: req.params.username });
+    if (!user) {
+        res.status(404).json({ message: 'User not found' });
+        return;
     }
     res.status(200).json(user);
 };
@@ -245,4 +259,5 @@ export default {
     remove_movie_from_diary,
     add_movie_to_diary,
     get_one_user,
+    get_user_by_username,
 };
